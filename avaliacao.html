@@ -8,7 +8,7 @@
   <title>Avaliação Capilar — HAIRCURA</title>
 
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="avaliacao.css">
+  <link rel="stylesheet" href="avaliacao.css?v=4">
 </head>
 
 <body class="assessment-page">
@@ -511,7 +511,10 @@
 
           <div>
             <span class="question-label">LAVAGEM</span>
-            <h2>Quantas vezes por semana você lava o cabelo?</h2>
+            <div class="question-title-row">
+              <h2>Quantas vezes por semana você lava o cabelo?</h2>
+              <button class="help-button" type="button" data-help="lavagem">? Ver orientação</button>
+            </div>
             <p>Isso ajuda a distribuir os tratamentos no cronograma.</p>
           </div>
         </div>
@@ -541,7 +544,10 @@
 
           <div>
             <span class="question-label">QUÍMICA</span>
-            <h2>Seu cabelo possui algum procedimento químico?</h2>
+            <div class="question-title-row">
+              <h2>Seu cabelo possui algum procedimento químico?</h2>
+              <button class="help-button" type="button" data-help="quimica">? Ver exemplos</button>
+            </div>
             <p>Você poderá selecionar mais de uma opção.</p>
           </div>
         </div>
@@ -588,7 +594,10 @@
 
           <div>
             <span class="question-label">CALOR</span>
-            <h2>Com que frequência você usa fontes de calor?</h2>
+            <div class="question-title-row">
+              <h2>Com que frequência você usa fontes de calor?</h2>
+              <button class="help-button" type="button" data-help="calor">? O que conta?</button>
+            </div>
             <p>Secador, chapinha, modelador ou outras ferramentas térmicas.</p>
           </div>
         </div>
@@ -618,7 +627,10 @@
 
           <div>
             <span class="question-label">ESTADO ATUAL</span>
-            <h2>Como seu cabelo está atualmente?</h2>
+            <div class="question-title-row">
+              <h2>Como seu cabelo está atualmente?</h2>
+              <button class="help-button" type="button" data-help="estadoAtual">? Ver sinais</button>
+            </div>
             <p>Selecione todos os sinais que você percebe nos fios.</p>
           </div>
         </div>
@@ -643,7 +655,10 @@
 
           <div>
             <span class="question-label">OBJETIVO</span>
-            <h2>Qual é seu principal objetivo?</h2>
+            <div class="question-title-row">
+              <h2>Qual é seu principal objetivo?</h2>
+              <button class="help-button" type="button" data-help="objetivo">? Entender objetivos</button>
+            </div>
             <p>Escolha o resultado que você mais deseja alcançar agora.</p>
           </div>
         </div>
@@ -694,7 +709,10 @@
 
           <div>
             <span class="question-label">FINALIZAÇÃO</span>
-            <h2>Como você prefere sua rotina?</h2>
+            <div class="question-title-row">
+              <h2>Como você prefere sua rotina?</h2>
+              <button class="help-button" type="button" data-help="rotina">? Comparar rotinas</button>
+            </div>
             <p>Isso ajuda o HAIRCURA a deixar o cronograma mais realista para você.</p>
           </div>
         </div>
@@ -819,6 +837,6 @@
     </div>
   </div>
 
-  <script src="avaliacao.js"></script>
+  <script src="avaliacao.js?v=4"></script>
 </body>
 </html>
