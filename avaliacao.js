@@ -4,7 +4,7 @@
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("HAIRCURA avaliação JS V4 carregado");
+  console.log("HAIRCURA avaliação JS V5 carregado");
   const totalSteps = 10;
   let currentStep = 1;
 
@@ -603,6 +603,72 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    const referencePhoto = (src, title, caption, sourceUrl) => `
+      <figure class="help-reference-photo">
+        <img
+          src="${src}"
+          alt="${title}"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          onerror="this.closest('.help-reference-photo').classList.add('image-error')"
+        >
+        <figcaption>
+          <strong>${title}</strong>
+          <span>${caption}</span>
+          <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">
+            Ver fonte da imagem ↗
+          </a>
+        </figcaption>
+      </figure>
+    `;
+
+    const hairReferenceGallery = () => `
+      <div class="help-photo-section">
+        <div class="help-photo-heading">
+          <span>FOTOS DE REFERÊNCIA</span>
+          <p>
+            Use as imagens apenas para comparar o formato geral. Textura, iluminação,
+            finalização e mistura de padrões podem mudar bastante a aparência.
+          </p>
+        </div>
+
+        <div class="help-reference-grid">
+          ${referencePhoto(
+            "https://commons.wikimedia.org/wiki/Special:Redirect/file/KatharineShepard1928.png?width=700",
+            "Referência de cabelo liso",
+            "Exemplo fotográfico de cabelo predominantemente reto.",
+            "https://commons.wikimedia.org/wiki/File:KatharineShepard1928.png"
+          )}
+
+          ${referencePhoto(
+            "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vintage_studio_portrait_woman_with_wavy_hair.jpg?width=700",
+            "Referência de cabelo ondulado",
+            "Exemplo com ondas visíveis no comprimento.",
+            "https://commons.wikimedia.org/wiki/File:Vintage_studio_portrait_woman_with_wavy_hair.jpg"
+          )}
+
+          ${referencePhoto(
+            "https://commons.wikimedia.org/wiki/Special:Redirect/file/Woman_with_curly_hair_1.jpg?width=700",
+            "Referência de cabelo cacheado",
+            "Exemplo com cachos e espirais aparentes.",
+            "https://commons.wikimedia.org/wiki/File:Woman_with_curly_hair_1.jpg"
+          )}
+
+          ${referencePhoto(
+            "https://commons.wikimedia.org/wiki/Special:Redirect/file/Woman_with_afro-textured_hair_(cropped).jpg?width=700",
+            "Referência de cabelo crespo",
+            "Exemplo de cabelo com textura afro e curvatura muito fechada.",
+            "https://commons.wikimedia.org/wiki/File:Woman_with_afro-textured_hair_(cropped).jpg"
+          )}
+        </div>
+
+        <p class="help-photo-disclaimer">
+          Uma fotografia sozinha não determina com precisão a classificação do cabelo.
+          Confirme sempre observando seus próprios fios em estado natural.
+        </p>
+      </div>
+    `;
+
     const guides = {
       tipo: {
         eyebrow: "GUIA VISUAL • ETAPA 1",
@@ -610,6 +676,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description:
           "Avalie o padrão predominante com o cabelo limpo, seco e sem chapinha, escova ou modelador. É normal existir mais de um padrão na mesma cabeça.",
         html: `
+          ${hairReferenceGallery()}
           <div class="help-visual-grid">
             ${visual("│", "Tipo 1 — Liso", "Predominantemente reto da raiz às pontas. Pode ter leve curvatura nas pontas, mas não forma ondas em S bem marcadas.", "Compare o desenho geral do cabelo, não apenas um fio isolado.")}
             ${visual("〰", "Tipo 2 — Ondulado", "Forma ondas parecidas com a letra S. O padrão pode ser discreto ou bastante marcado, mas não forma anéis completos na maior parte do comprimento.", "Ondas podem começar abaixo da raiz ou aparecer em quase todo o comprimento.")}
@@ -627,6 +694,7 @@ document.addEventListener("DOMContentLoaded", () => {
         description:
           "As letras A, B e C ajudam a descrever o quanto o padrão é suave, intermediário ou intenso dentro de cada família. Use como referência prática, não como medição clínica.",
         html: `
+          ${hairReferenceGallery()}
           <div class="help-family-section">
             <strong>TIPO 1 • LISOS</strong>
             <div class="help-mini-grid">
@@ -676,6 +744,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           ${tip("Teste de um fio", "Separe um único fio limpo e seco. Passe-o suavemente entre o polegar e o indicador. Compare também visualmente com um fio de linha comum, sem tratar isso como uma medição exata.")}
           ${tip("Evite este erro", "Um cabelo com muito volume pode ter fios finos e alta densidade. Volume não significa necessariamente fio grosso.")}
+          ${tip("Por que não usamos foto para decidir a espessura", "Uma foto comum não mede o diâmetro real de um único fio com segurança. Distância, foco e iluminação podem enganar. Por isso o teste manual continua sendo a referência principal nesta etapa.")}
         `
       },
 
@@ -692,6 +761,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           ${tip("O que observar", "Pense em várias lavagens, não em um único dia. Observe velocidade para molhar, comportamento durante a secagem e quanto tempo permanece a sensação de maciez após produtos.")}
           ${tip("Sobre o teste do copo", "O HAIRCURA não usa o fio boiando ou afundando em um copo como resultado definitivo. Resíduos, tensão superficial e outras variáveis podem atrapalhar essa comparação.")}
+          ${tip("Por que uma foto não confirma porosidade", "Porosidade é principalmente um comportamento do fio com água e produtos. Uma imagem pode mostrar sinais visuais, mas não confirma sozinha se a porosidade é baixa, média ou alta.")}
         `
       },
 
@@ -707,6 +777,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${visual("5+×", "5 vezes ou mais", "Escolha se você lava quase diariamente ou todos os dias.")}
           </div>
           ${tip("Como contar", "Considere uma semana comum das últimas semanas. Não escolha a frequência que você gostaria de ter; escolha a que realmente acontece.")}
+          ${tip("Aqui a foto não é necessária", "A etapa de lavagem depende da sua rotina real, então uma resposta direta é mais confiável do que tentar inferir isso por imagem.")}
           ${tip("Por que perguntamos", "O cronograma precisa caber nos dias em que você já lava o cabelo. Assim evitamos sugerir tratamentos em uma frequência pouco prática.")}
         `
       },
@@ -724,6 +795,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${visual("✓", "Nenhuma química", "Escolha somente quando nenhuma das opções anteriores estiver presente no cabelo.")}
           </div>
           ${tip("Mais de uma opção", "Um cabelo pode ter, por exemplo, descoloração e tintura ao mesmo tempo. Marque todas as opções aplicáveis.")}
+          ${tip("A aparência pode enganar", "Alguns procedimentos químicos não ficam evidentes em uma foto. Por isso a informação fornecida por você é mais confiável nesta etapa.")}
           ${tip("Por que isso importa", "Procedimentos químicos podem alterar as necessidades do fio. Por isso essa informação terá peso no cronograma personalizado.")}
         `
       },
@@ -743,6 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ${tip("Às vezes", "Em torno de 1–2 vezes por semana.")}
           ${tip("Frequentemente", "Em torno de 3 vezes por semana ou mais.")}
           ${tip("Proteção térmica", "O uso de protetor térmico é uma informação importante para os cuidados, mas nesta pergunta queremos saber a frequência de exposição ao calor.")}
+          ${tip("Foto não mostra frequência", "Mesmo que o cabelo apresente sinais compatíveis com calor, uma imagem não informa quantas vezes você usa secador, chapinha ou modelador.")}
         `
       },
 
@@ -764,6 +837,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${visual("✓", "Parece saudável", "Boa aparência geral, sem os sinais anteriores de forma relevante.")}
           </div>
           ${tip("Selecione mais de um", "Ressecamento, frizz e falta de brilho podem aparecer juntos. Marque todos que realmente representam o momento atual.")}
+          ${tip("Compare com a sua própria foto", "Nesta etapa, a foto enviada pode ajudar você a observar frizz, brilho e definição. Ainda assim, toque, quebra e sensação de ressecamento precisam ser confirmados por você.")}
           ${tip("Couro cabeludo", "Feridas, dor, secreção, coceira intensa ou queda acentuada não devem ser avaliadas por este questionário; nesses casos, procure avaliação de um dermatologista.")}
         `
       },
@@ -783,6 +857,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${visual("✓", "Manutenção", "Para quem considera o cabelo saudável e quer preservar o equilíbrio atual.")}
           </div>
           ${tip("Como decidir", "Pergunte: se eu pudesse melhorar apenas uma coisa nas próximas semanas, qual mudança faria mais diferença para mim?")}
+          ${tip("Objetivo é pessoal", "Nenhuma foto consegue escolher a sua prioridade por você. Essa etapa representa o resultado que você deseja alcançar.")}
         `
       },
 
@@ -798,6 +873,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${visual("✦", "Completa", "Rotina mais detalhada, com maior variedade de etapas e acompanhamento.", "Para quem gosta de dedicar mais atenção aos cuidados.")}
           </div>
           ${tip("Sem resposta certa", "Escolher uma rotina rápida não reduz a qualidade da avaliação. O HAIRCURA deve adaptar as recomendações ao tempo disponível.")}
+          ${tip("A rotina precisa caber na vida real", "Esta escolha não depende da aparência do cabelo, e sim de quanto tempo e atenção você consegue dedicar aos cuidados.")}
           ${tip("Você poderá ajustar depois", "A preferência de rotina pode mudar. Futuramente o perfil permitirá recalcular o cronograma quando sua disponibilidade mudar.")}
         `
       }
@@ -1633,6 +1709,100 @@ document.addEventListener("DOMContentLoaded", () => {
         overflow-y: auto;
       }
 
+
+      .help-photo-section {
+        margin-top: 17px;
+        padding: 15px;
+        border: 1px solid rgba(139,92,246,.16);
+        border-radius: 20px;
+        background: rgba(139,92,246,.035);
+      }
+
+      .help-photo-heading span {
+        color: #b7a5ff;
+        font-size: .66rem;
+        font-weight: 900;
+        letter-spacing: .1em;
+      }
+
+      .help-photo-heading p {
+        margin: 7px 0 0;
+        color: #918a9f;
+        font-size: .73rem;
+        line-height: 1.5;
+      }
+
+      .help-reference-grid {
+        margin-top: 13px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .help-reference-photo {
+        margin: 0;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.07);
+        border-radius: 15px;
+        background: rgba(255,255,255,.025);
+      }
+
+      .help-reference-photo img {
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        display: block;
+        object-fit: cover;
+        background: rgba(255,255,255,.03);
+      }
+
+      .help-reference-photo figcaption {
+        padding: 10px;
+      }
+
+      .help-reference-photo figcaption strong {
+        display: block;
+        color: #f4f0ff;
+        font-size: .72rem;
+      }
+
+      .help-reference-photo figcaption span {
+        display: block;
+        margin-top: 4px;
+        color: #837d8f;
+        font-size: .64rem;
+        line-height: 1.4;
+      }
+
+      .help-reference-photo figcaption a {
+        display: inline-block;
+        margin-top: 7px;
+        color: #b49cff;
+        font-size: .61rem;
+        text-decoration: none;
+      }
+
+      .help-reference-photo.image-error img {
+        display: none;
+      }
+
+      .help-reference-photo.image-error::before {
+        content: "Imagem temporariamente indisponível";
+        min-height: 140px;
+        padding: 12px;
+        display: grid;
+        place-items: center;
+        color: #817a8d;
+        font-size: .67rem;
+        text-align: center;
+      }
+
+      .help-photo-disclaimer {
+        margin: 12px 0 0;
+        color: #766f83;
+        font-size: .66rem;
+        line-height: 1.5;
+      }
+
       .help-visual-grid,
       .help-mini-grid {
         display: grid;
@@ -1725,6 +1895,10 @@ document.addEventListener("DOMContentLoaded", () => {
       @media (max-width: 640px) {
         .result-score-grid {
           grid-template-columns: 1fr;
+        }
+
+        .help-reference-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .help-visual-grid,
