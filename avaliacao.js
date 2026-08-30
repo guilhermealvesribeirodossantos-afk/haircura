@@ -4,7 +4,7 @@
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("HAIRCURA avaliação JS V3 carregado");
+  console.log("HAIRCURA avaliação JS V4 carregado");
   const totalSteps = 10;
   let currentStep = 1;
 
@@ -562,13 +562,15 @@ document.addEventListener("DOMContentLoaded", () => {
     hairHelpTitle.textContent = content.title;
     hairHelpDescription.textContent = content.description;
     hairHelpContent.innerHTML = content.html;
-    hairHelpNext.textContent =
-      type === "tipo"
-        ? "Entendi"
-        : "Começar teste";
+    const guidedTypes = ["curvatura", "espessura", "porosidade"];
+    const hasGuidedTest = guidedTypes.includes(type);
+
+    hairHelpNext.textContent = hasGuidedTest
+      ? "Começar teste"
+      : "Entendi";
 
     hairHelpNext.onclick = () => {
-      if (type === "tipo") {
+      if (!hasGuidedTest) {
         closeHelp();
         return;
       }
@@ -583,81 +585,225 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getHelpIntro(type) {
+    const visual = (emoji, title, text, note = "") => `
+      <div class="help-visual-card">
+        <div class="help-visual-image" aria-hidden="true">${emoji}</div>
+        <div>
+          <strong>${title}</strong>
+          <p>${text}</p>
+          ${note ? `<small>${note}</small>` : ""}
+        </div>
+      </div>
+    `;
+
+    const tip = (title, text) => `
+      <div class="help-tip-box">
+        <strong>✦ ${title}</strong>
+        <p>${text}</p>
+      </div>
+    `;
+
     const guides = {
       tipo: {
-        eyebrow: "GUIA DE TIPO",
-        title: "Observe o formato natural do fio",
+        eyebrow: "GUIA VISUAL • ETAPA 1",
+        title: "Observe o formato natural do cabelo",
         description:
-          "Veja o cabelo limpo, seco e sem chapinha, escova ou modelador.",
+          "Avalie o padrão predominante com o cabelo limpo, seco e sem chapinha, escova ou modelador. É normal existir mais de um padrão na mesma cabeça.",
         html: `
-          <div class="help-guide-card">
-            <strong>Tipo 1 — Liso</strong>
-            <p>O fio permanece predominantemente reto.</p>
+          <div class="help-visual-grid">
+            ${visual("│", "Tipo 1 — Liso", "Predominantemente reto da raiz às pontas. Pode ter leve curvatura nas pontas, mas não forma ondas em S bem marcadas.", "Compare o desenho geral do cabelo, não apenas um fio isolado.")}
+            ${visual("〰", "Tipo 2 — Ondulado", "Forma ondas parecidas com a letra S. O padrão pode ser discreto ou bastante marcado, mas não forma anéis completos na maior parte do comprimento.", "Ondas podem começar abaixo da raiz ou aparecer em quase todo o comprimento.")}
+            ${visual("➰", "Tipo 3 — Cacheado", "Forma cachos completos, espirais ou anéis visíveis. O diâmetro dos cachos pode variar de largo a bem pequeno.", "Observe o cabelo sem esticar os cachos.")}
+            ${visual("〽", "Tipo 4 — Crespo", "Apresenta curvaturas muito fechadas, pequenas espirais ou padrões angulares/zigue-zague. O encolhimento pode ser bastante perceptível.", "Não use o volume como critério: observe o formato do fio.")}
           </div>
-
-          <div class="help-guide-card">
-            <strong>Tipo 2 — Ondulado</strong>
-            <p>Forma ondas parecidas com a letra S, sem fechar cachos completos.</p>
-          </div>
-
-          <div class="help-guide-card">
-            <strong>Tipo 3 — Cacheado</strong>
-            <p>Forma espirais ou anéis visíveis ao longo do cabelo.</p>
-          </div>
-
-          <div class="help-guide-card">
-            <strong>Tipo 4 — Crespo</strong>
-            <p>Apresenta curvaturas muito fechadas, pequenas espirais ou padrão em zigue-zague.</p>
-          </div>
+          ${tip("Como observar melhor", "Depois de lavar, deixe o cabelo secar no padrão natural. Não penteie esticando os fios. Observe principalmente laterais, topo e nuca.")}
+          ${tip("Cabelo misto", "Se você enxergar dois padrões, escolha o que aparece na maior parte do cabelo. Na etapa seguinte você poderá refinar a curvatura.")}
         `
       },
 
       curvatura: {
-        eyebrow: "TESTE DE CURVATURA",
-        title: "Vamos estimar sua curvatura",
+        eyebrow: "GUIA + TESTE • ETAPA 2",
+        title: "Compare a intensidade da sua curvatura",
         description:
-          "Responda observando a maior parte do cabelo em seu estado natural.",
+          "As letras A, B e C ajudam a descrever o quanto o padrão é suave, intermediário ou intenso dentro de cada família. Use como referência prática, não como medição clínica.",
         html: `
-          <div class="help-guide-card">
-            <strong>O teste leva poucos segundos</strong>
-            <p>Vamos perguntar como o fio se comporta e indicar a faixa mais provável.</p>
+          <div class="help-family-section">
+            <strong>TIPO 1 • LISOS</strong>
+            <div class="help-mini-grid">
+              ${visual("│", "1A", "Muito reto, com pouca ou nenhuma curvatura aparente.")}
+              ${visual("╵", "1B", "Reto, mas com um pouco mais de corpo e movimento.")}
+              ${visual("⌒", "1C", "Liso encorpado, podendo apresentar leves curvas nas pontas.")}
+            </div>
           </div>
+          <div class="help-family-section">
+            <strong>TIPO 2 • ONDULADOS</strong>
+            <div class="help-mini-grid">
+              ${visual("﹏", "2A", "Ondas suaves e abertas, geralmente pouco marcadas.")}
+              ${visual("〰", "2B", "Ondas em S mais visíveis e distribuídas pelo comprimento.")}
+              ${visual("≈", "2C", "Ondas intensas; algumas partes podem quase formar cachos.")}
+            </div>
+          </div>
+          <div class="help-family-section">
+            <strong>TIPO 3 • CACHEADOS</strong>
+            <div class="help-mini-grid">
+              ${visual("◯", "3A", "Cachos grandes e abertos.")}
+              ${visual("➰", "3B", "Cachos médios, definidos e mais fechados.")}
+              ${visual("꩜", "3C", "Cachos pequenos, densos e bem fechados.")}
+            </div>
+          </div>
+          <div class="help-family-section">
+            <strong>TIPO 4 • CRESPOS</strong>
+            <div class="help-mini-grid">
+              ${visual("∞", "4A", "Pequenas espirais relativamente definidas.")}
+              ${visual("〽", "4B", "Curvas menores e padrão mais angular/zigue-zague.")}
+              ${visual("✣", "4C", "Curvatura extremamente fechada, com padrão visual muito compacto.")}
+            </div>
+          </div>
+          ${tip("Importante", "Não precisa encaixar 100% em uma letra. Escolha a opção predominante. O HAIRCURA cruza essa resposta com as outras etapas.")}
         `
       },
 
       espessura: {
-        eyebrow: "TESTE DE ESPESSURA",
-        title: "Descubra se o fio é fino, médio ou grosso",
+        eyebrow: "GUIA + TESTE • ETAPA 3",
+        title: "Descubra se um fio é fino, médio ou grosso",
         description:
-          "Pegue um único fio limpo e seco. Observe e sinta o fio entre os dedos.",
+          "Espessura é o diâmetro de um único fio. Não confunda com densidade, que é a quantidade de fios na cabeça.",
         html: `
-          <div class="help-guide-card">
-            <strong>Dica</strong>
-            <p>Não avalie a quantidade de cabelo. Queremos a espessura de apenas um fio.</p>
+          <div class="help-visual-grid">
+            ${visual("│", "Fino", "Fio delicado, pouco perceptível visualmente e difícil de sentir entre os dedos.", "Pode embaraçar ou quebrar com maior facilidade, mas isso sozinho não define a espessura.")}
+            ${visual("┃", "Médio", "Você consegue ver e sentir o fio, mas ele não parece especialmente delicado nem rígido.")}
+            ${visual("▌", "Grosso", "Fio facilmente visível e perceptível entre os dedos, com sensação mais firme ou encorpada.")}
           </div>
-
-          <div class="help-guide-card">
-            <strong>Como comparar</strong>
-            <p>Um fio fino costuma ser pouco perceptível; um fio grosso é facilmente visível e sentido entre os dedos.</p>
-          </div>
+          ${tip("Teste de um fio", "Separe um único fio limpo e seco. Passe-o suavemente entre o polegar e o indicador. Compare também visualmente com um fio de linha comum, sem tratar isso como uma medição exata.")}
+          ${tip("Evite este erro", "Um cabelo com muito volume pode ter fios finos e alta densidade. Volume não significa necessariamente fio grosso.")}
         `
       },
 
       porosidade: {
-        eyebrow: "TESTE DE POROSIDADE",
-        title: "Vamos observar como seu cabelo reage à água",
+        eyebrow: "GUIA + TESTE • ETAPA 4",
+        title: "Observe como o cabelo recebe e mantém água",
         description:
-          "O teste usa o comportamento real dos fios em vez de depender do teste do copo.",
+          "A porosidade descreve, de forma prática, como os fios interagem com água e produtos. O teste guiado usa o comportamento cotidiano do cabelo.",
         html: `
-          <div class="help-guide-card">
-            <strong>Antes de começar</strong>
-            <p>Pense em como seu cabelo costuma molhar, secar e receber produtos no dia a dia.</p>
+          <div class="help-visual-grid">
+            ${visual("💧", "Baixa porosidade", "Pode demorar para ficar completamente molhado e alguns produtos parecem permanecer sobre os fios ou pesar.")}
+            ${visual("💦", "Porosidade média", "Molha e seca de maneira relativamente equilibrada e costuma responder bem aos produtos.")}
+            ${visual("🌧", "Alta porosidade", "Pode molhar rapidamente e também perder a sensação de hidratação mais depressa; danos químicos ou térmicos podem contribuir.")}
           </div>
+          ${tip("O que observar", "Pense em várias lavagens, não em um único dia. Observe velocidade para molhar, comportamento durante a secagem e quanto tempo permanece a sensação de maciez após produtos.")}
+          ${tip("Sobre o teste do copo", "O HAIRCURA não usa o fio boiando ou afundando em um copo como resultado definitivo. Resíduos, tensão superficial e outras variáveis podem atrapalhar essa comparação.")}
+        `
+      },
+
+      lavagem: {
+        eyebrow: "ORIENTAÇÃO • ETAPA 5",
+        title: "Conte sua frequência real de lavagem",
+        description:
+          "Não existe uma frequência universal que sirva para todo cabelo. Aqui queremos entender sua rotina atual para distribuir os cuidados de forma realista.",
+        html: `
+          <div class="help-visual-grid">
+            ${visual("1–2×", "1–2 vezes por semana", "Escolha se normalmente existem vários dias entre uma lavagem e outra.")}
+            ${visual("3–4×", "3–4 vezes por semana", "Escolha se você costuma lavar em dias alternados ou próximo disso.")}
+            ${visual("5+×", "5 vezes ou mais", "Escolha se você lava quase diariamente ou todos os dias.")}
+          </div>
+          ${tip("Como contar", "Considere uma semana comum das últimas semanas. Não escolha a frequência que você gostaria de ter; escolha a que realmente acontece.")}
+          ${tip("Por que perguntamos", "O cronograma precisa caber nos dias em que você já lava o cabelo. Assim evitamos sugerir tratamentos em uma frequência pouco prática.")}
+        `
+      },
+
+      quimica: {
+        eyebrow: "GUIA VISUAL • ETAPA 6",
+        title: "Identifique procedimentos químicos no cabelo",
+        description:
+          "Marque tudo que estiver presente atualmente no comprimento dos fios, mesmo que o procedimento tenha sido feito há algum tempo.",
+        html: `
+          <div class="help-visual-grid">
+            ${visual("🎨", "Tintura / coloração", "Coloração permanente, semipermanente ou tonalização que altera a cor dos fios.")}
+            ${visual("☀", "Descoloração", "Mechas, luzes, balayage, platinado ou qualquer processo usado para clarear removendo pigmento.")}
+            ${visual("〰→│", "Alisamento / progressiva", "Procedimentos químicos destinados a reduzir volume, modificar a curvatura ou deixar o cabelo mais liso.")}
+            ${visual("✓", "Nenhuma química", "Escolha somente quando nenhuma das opções anteriores estiver presente no cabelo.")}
+          </div>
+          ${tip("Mais de uma opção", "Um cabelo pode ter, por exemplo, descoloração e tintura ao mesmo tempo. Marque todas as opções aplicáveis.")}
+          ${tip("Por que isso importa", "Procedimentos químicos podem alterar as necessidades do fio. Por isso essa informação terá peso no cronograma personalizado.")}
+        `
+      },
+
+      calor: {
+        eyebrow: "ORIENTAÇÃO • ETAPA 7",
+        title: "Veja o que consideramos fonte de calor",
+        description:
+          "Considere ferramentas que aplicam calor diretamente ou ar quente aos fios.",
+        html: `
+          <div class="help-visual-grid">
+            ${visual("💨", "Secador", "Conte quando usado com ar morno ou quente, principalmente próximo aos fios.")}
+            ${visual("▭", "Chapinha", "O contato direto das placas aquecidas conta como uso de calor.")}
+            ${visual("➰", "Modelador / babyliss", "Ferramentas aquecidas usadas para criar ondas ou cachos também contam.")}
+          </div>
+          ${tip("Raramente", "Quase nunca ou apenas em ocasiões específicas.")}
+          ${tip("Às vezes", "Em torno de 1–2 vezes por semana.")}
+          ${tip("Frequentemente", "Em torno de 3 vezes por semana ou mais.")}
+          ${tip("Proteção térmica", "O uso de protetor térmico é uma informação importante para os cuidados, mas nesta pergunta queremos saber a frequência de exposição ao calor.")}
+        `
+      },
+
+      estadoAtual: {
+        eyebrow: "GUIA DE SINAIS • ETAPA 8",
+        title: "Compare os sinais que você percebe hoje",
+        description:
+          "Você pode marcar vários sinais. Observe principalmente comprimento e pontas, sem tentar transformar um único sintoma em diagnóstico.",
+        html: `
+          <div class="help-visual-grid">
+            ${visual("☁", "Ressecado", "Toque áspero, pouca maciez e sensação de fio seco.")}
+            ${visual("≈", "Frizz", "Fios arrepiados ou desalinhados ao redor do cabelo, especialmente fora do padrão principal.")}
+            ${visual("◇", "Sem brilho", "O cabelo parece opaco e reflete pouca luz mesmo quando está limpo.")}
+            ${visual("⚡", "Quebradiço", "Fios partem com facilidade e podem aparecer pedaços menores durante penteado ou manipulação.")}
+            ${visual("💧", "Poroso", "Comportamento compatível com absorção/perda rápida de água e produtos.")}
+            ${visual("●", "Oleoso", "Raiz ou fios apresentam oleosidade perceptível rapidamente.")}
+            ${visual("➰?", "Sem definição", "Ondas, cachos ou crespos perdem o formato que normalmente apresentam.")}
+            ${visual("⌁", "Embaraça muito", "Nós aparecem com frequência e desembaraçar exige mais esforço que o habitual.")}
+            ${visual("✓", "Parece saudável", "Boa aparência geral, sem os sinais anteriores de forma relevante.")}
+          </div>
+          ${tip("Selecione mais de um", "Ressecamento, frizz e falta de brilho podem aparecer juntos. Marque todos que realmente representam o momento atual.")}
+          ${tip("Couro cabeludo", "Feridas, dor, secreção, coceira intensa ou queda acentuada não devem ser avaliadas por este questionário; nesses casos, procure avaliação de um dermatologista.")}
+        `
+      },
+
+      objetivo: {
+        eyebrow: "GUIA DE OBJETIVOS • ETAPA 9",
+        title: "Escolha a prioridade que mais importa agora",
+        description:
+          "Mesmo que você queira vários resultados, escolha aquele que deve ter maior prioridade no início do cronograma.",
+        html: `
+          <div class="help-visual-grid">
+            ${visual("🛠", "Recuperação", "Para quem percebe danos, quebra, fragilidade ou efeitos importantes de química/calor.")}
+            ${visual("✨", "Maciez e brilho", "Para priorizar toque mais sedoso, aparência menos opaca e melhor acabamento.")}
+            ${visual("➰", "Definição", "Para valorizar o desenho natural de ondas, cachos ou crespos.")}
+            ${visual("≈", "Reduzir frizz", "Para priorizar alinhamento e controle dos fios arrepiados.")}
+            ${visual("↗", "Crescimento", "O foco do app será apoiar retenção de comprimento e redução de danos; o ritmo biológico de crescimento não pode ser garantido por cosméticos.")}
+            ${visual("✓", "Manutenção", "Para quem considera o cabelo saudável e quer preservar o equilíbrio atual.")}
+          </div>
+          ${tip("Como decidir", "Pergunte: se eu pudesse melhorar apenas uma coisa nas próximas semanas, qual mudança faria mais diferença para mim?")}
+        `
+      },
+
+      rotina: {
+        eyebrow: "COMPARADOR • ETAPA 10",
+        title: "Escolha uma rotina que você realmente consiga manter",
+        description:
+          "A melhor rotina não é a mais longa: é aquela que cabe na sua semana e pode ser seguida com consistência.",
+        html: `
+          <div class="help-visual-grid">
+            ${visual("⚡", "Rápida e prática", "Poucos passos, foco no essencial e menor tempo por sessão.", "Ideal para quem quer simplicidade e pouca manutenção.")}
+            ${visual("◎", "Equilibrada", "Combina praticidade com etapas extras quando elas fizerem sentido.", "Boa opção para quem consegue reservar um pouco mais de tempo.")}
+            ${visual("✦", "Completa", "Rotina mais detalhada, com maior variedade de etapas e acompanhamento.", "Para quem gosta de dedicar mais atenção aos cuidados.")}
+          </div>
+          ${tip("Sem resposta certa", "Escolher uma rotina rápida não reduz a qualidade da avaliação. O HAIRCURA deve adaptar as recomendações ao tempo disponível.")}
+          ${tip("Você poderá ajustar depois", "A preferência de rotina pode mudar. Futuramente o perfil permitirá recalcular o cronograma quando sua disponibilidade mudar.")}
         `
       }
     };
 
-    return guides[type];
+    return guides[type] || guides.tipo;
   }
 
   function startGuidedTest(type) {
@@ -1481,9 +1627,118 @@ document.addEventListener("DOMContentLoaded", () => {
         to { transform: translateX(190%); }
       }
 
+
+      .hair-help-dialog {
+        max-height: min(88vh, 900px);
+        overflow-y: auto;
+      }
+
+      .help-visual-grid,
+      .help-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .help-mini-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .help-visual-card {
+        min-width: 0;
+        padding: 14px;
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 12px;
+        align-items: start;
+        border: 1px solid rgba(255,255,255,.075);
+        border-radius: 17px;
+        background:
+          linear-gradient(145deg, rgba(139,92,246,.07), rgba(255,255,255,.018));
+      }
+
+      .help-visual-image {
+        width: 54px;
+        height: 54px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(139,92,246,.22);
+        border-radius: 15px;
+        background: rgba(139,92,246,.09);
+        color: #d5c8ff;
+        font-size: 1.45rem;
+        font-weight: 900;
+      }
+
+      .help-visual-card strong {
+        display: block;
+        color: #f5f2ff;
+        font-size: .86rem;
+      }
+
+      .help-visual-card p {
+        margin: 5px 0 0;
+        color: #aaa4b5;
+        font-size: .76rem;
+        line-height: 1.5;
+      }
+
+      .help-visual-card small {
+        display: block;
+        margin-top: 7px;
+        color: #7f788e;
+        font-size: .68rem;
+        line-height: 1.45;
+      }
+
+      .help-tip-box {
+        margin-top: 11px;
+        padding: 13px 14px;
+        border-left: 3px solid #8b5cf6;
+        border-radius: 0 13px 13px 0;
+        background: rgba(139,92,246,.065);
+      }
+
+      .help-tip-box strong {
+        color: #c8b8ff;
+        font-size: .77rem;
+      }
+
+      .help-tip-box p {
+        margin: 5px 0 0;
+        color: #9d96aa;
+        font-size: .74rem;
+        line-height: 1.55;
+      }
+
+      .help-family-section {
+        margin-top: 16px;
+      }
+
+      .help-family-section > strong {
+        color: #9c8cff;
+        font-size: .67rem;
+        letter-spacing: .09em;
+      }
+
       @media (max-width: 640px) {
         .result-score-grid {
           grid-template-columns: 1fr;
+        }
+
+        .help-visual-grid,
+        .help-mini-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .help-visual-card {
+          grid-template-columns: 48px 1fr;
+        }
+
+        .help-visual-image {
+          width: 48px;
+          height: 48px;
         }
 
         .assessment-toast {
