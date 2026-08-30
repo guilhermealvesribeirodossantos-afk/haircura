@@ -22,14 +22,14 @@
     <div class="assessment-progress-wrap">
       <div class="assessment-progress-top">
         <span>AVALIAÇÃO CAPILAR</span>
-        <strong id="progressText">1 de 10</strong>
+        <strong id="progressText">Foto + 1 de 10</strong>
       </div>
 
       <div class="assessment-progress">
         <div
           class="assessment-progress-bar"
           id="progressBar"
-          style="width: 10%;"
+          style="width: 5%;"
         ></div>
       </div>
     </div>
@@ -55,12 +55,174 @@
       <h1>Vamos conhecer seu cabelo.</h1>
 
       <p>
-        Responda algumas perguntas para o HAIRCURA entender as necessidades
-        dos seus fios e criar uma rotina personalizada.
+        Você pode enviar uma foto para ajudar na análise e depois confirmar
+        tudo com perguntas e testes guiados.
       </p>
     </section>
 
-    <section class="assessment-card">
+    <!-- =====================================================
+         ANÁLISE POR FOTO
+         ===================================================== -->
+
+    <section class="photo-analysis-card" id="photoAnalysisCard">
+
+      <div class="photo-analysis-head">
+        <div class="photo-analysis-icon">📸</div>
+
+        <div>
+          <span class="question-label">ANÁLISE VISUAL OPCIONAL</span>
+          <h2>Envie uma foto do seu cabelo</h2>
+          <p>
+            A foto ajuda o HAIRCURA a estimar características visuais dos fios.
+            Você sempre poderá confirmar ou corrigir o resultado.
+          </p>
+        </div>
+      </div>
+
+      <div class="photo-analysis-grid">
+
+        <div class="photo-upload-area" id="photoUploadArea">
+          <input
+            type="file"
+            id="hairPhotoInput"
+            accept="image/jpeg,image/png,image/webp"
+            capture="environment"
+            hidden
+          >
+
+          <div class="photo-empty-state" id="photoEmptyState">
+            <div class="photo-upload-icon">＋</div>
+
+            <strong>Adicionar foto</strong>
+
+            <span>
+              JPG, PNG ou WEBP
+            </span>
+
+            <button
+              class="photo-select-button"
+              type="button"
+              id="selectPhotoButton"
+            >
+              Escolher foto
+            </button>
+          </div>
+
+          <div class="photo-preview-state" id="photoPreviewState" hidden>
+            <img
+              id="hairPhotoPreview"
+              src=""
+              alt="Prévia da foto do cabelo"
+            >
+
+            <div class="photo-preview-overlay">
+              <button type="button" id="changePhotoButton">
+                Trocar foto
+              </button>
+
+              <button type="button" id="removePhotoButton">
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="photo-guide">
+          <span class="photo-guide-title">Para uma análise melhor:</span>
+
+          <div class="photo-guide-item">
+            <span>01</span>
+            <p>Use boa iluminação, de preferência luz natural.</p>
+          </div>
+
+          <div class="photo-guide-item">
+            <span>02</span>
+            <p>Deixe o cabelo solto e sem filtros na câmera.</p>
+          </div>
+
+          <div class="photo-guide-item">
+            <span>03</span>
+            <p>Mostre bem os fios e evite uma foto muito distante.</p>
+          </div>
+
+          <div class="photo-guide-item">
+            <span>04</span>
+            <p>Se possível, tire a foto antes de finalizar o cabelo.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="photo-analysis-actions">
+        <button
+          class="photo-analyze-button"
+          id="analyzePhotoButton"
+          type="button"
+          disabled
+        >
+          ✦ Analisar minha foto
+        </button>
+
+        <button
+          class="photo-skip-button"
+          id="skipPhotoButton"
+          type="button"
+        >
+          Continuar sem foto
+        </button>
+      </div>
+
+      <div class="photo-analysis-result" id="photoAnalysisResult" hidden>
+
+        <div class="photo-result-top">
+          <div>
+            <span class="question-label">ESTIMATIVA VISUAL</span>
+            <h3>Características encontradas</h3>
+          </div>
+
+          <span class="photo-confidence" id="photoConfidence">
+            análise inicial
+          </span>
+        </div>
+
+        <div class="photo-result-grid">
+
+          <div class="photo-result-item">
+            <span>Tipo aparente</span>
+            <strong id="photoHairType">—</strong>
+          </div>
+
+          <div class="photo-result-item">
+            <span>Curvatura provável</span>
+            <strong id="photoCurlType">—</strong>
+          </div>
+
+          <div class="photo-result-item">
+            <span>Espessura estimada</span>
+            <strong id="photoThickness">—</strong>
+          </div>
+
+          <div class="photo-result-item">
+            <span>Sinais visuais</span>
+            <strong id="photoVisualSigns">—</strong>
+          </div>
+
+        </div>
+
+        <p class="photo-result-warning">
+          A análise da foto é uma estimativa visual. As perguntas e testes
+          abaixo serão usados para confirmar o seu perfil.
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- =====================================================
+         QUESTIONÁRIO
+         ===================================================== -->
+
+    <section class="assessment-card" id="assessmentQuestions">
 
       <!-- PERGUNTA 1 -->
       <div class="question-step active" data-step="1">
@@ -69,7 +231,19 @@
 
           <div>
             <span class="question-label">TIPO DE CABELO</span>
-            <h2>Qual é o seu tipo de cabelo?</h2>
+
+            <div class="question-title-row">
+              <h2>Qual é o seu tipo de cabelo?</h2>
+
+              <button
+                class="help-button"
+                type="button"
+                data-help="tipo"
+              >
+                ? Me ajude a descobrir
+              </button>
+            </div>
+
             <p>Escolha a opção que mais representa seus fios naturalmente.</p>
           </div>
         </div>
@@ -105,6 +279,14 @@
           </button>
 
         </div>
+
+        <button
+          class="inline-test-button"
+          type="button"
+          data-help="tipo"
+        >
+          Ver guia visual dos tipos 1, 2, 3 e 4 →
+        </button>
       </div>
 
       <!-- PERGUNTA 2 -->
@@ -114,7 +296,19 @@
 
           <div>
             <span class="question-label">CURVATURA</span>
-            <h2>Qual é a curvatura predominante?</h2>
+
+            <div class="question-title-row">
+              <h2>Qual é a curvatura predominante?</h2>
+
+              <button
+                class="help-button"
+                type="button"
+                data-help="curvatura"
+              >
+                ? Me ajude a descobrir
+              </button>
+            </div>
+
             <p>Escolha a opção que mais se aproxima do formato dos seus fios.</p>
           </div>
         </div>
@@ -180,6 +374,14 @@
             <small>Crespo intenso</small>
           </button>
         </div>
+
+        <button
+          class="inline-test-button"
+          type="button"
+          data-help="curvatura"
+        >
+          Fazer teste guiado de curvatura →
+        </button>
       </div>
 
       <!-- PERGUNTA 3 -->
@@ -189,7 +391,19 @@
 
           <div>
             <span class="question-label">ESPESSURA</span>
-            <h2>Como você considera a espessura dos fios?</h2>
+
+            <div class="question-title-row">
+              <h2>Como você considera a espessura dos fios?</h2>
+
+              <button
+                class="help-button"
+                type="button"
+                data-help="espessura"
+              >
+                ? Não sei
+              </button>
+            </div>
+
             <p>Pense na espessura de um único fio de cabelo.</p>
           </div>
         </div>
@@ -213,6 +427,14 @@
             <small>Fios mais encorpados</small>
           </button>
         </div>
+
+        <button
+          class="inline-test-button"
+          type="button"
+          data-help="espessura"
+        >
+          Fazer teste de espessura →
+        </button>
       </div>
 
       <!-- PERGUNTA 4 -->
@@ -222,7 +444,19 @@
 
           <div>
             <span class="question-label">POROSIDADE</span>
-            <h2>Como seu cabelo absorve água e produtos?</h2>
+
+            <div class="question-title-row">
+              <h2>Como seu cabelo absorve água e produtos?</h2>
+
+              <button
+                class="help-button"
+                type="button"
+                data-help="porosidade"
+              >
+                ? Fazer teste
+              </button>
+            </div>
+
             <p>Escolha a opção que mais combina com o comportamento dos fios.</p>
           </div>
         </div>
@@ -256,10 +490,18 @@
             <span class="row-icon">?</span>
             <span>
               <strong>Não sei</strong>
-              <small>O HAIRCURA pode considerar outros sinais da avaliação.</small>
+              <small>Faça o teste guiado do HAIRCURA para estimar.</small>
             </span>
           </button>
         </div>
+
+        <button
+          class="inline-test-button"
+          type="button"
+          data-help="porosidade"
+        >
+          Descobrir minha porosidade →
+        </button>
       </div>
 
       <!-- PERGUNTA 5 -->
@@ -510,11 +752,72 @@
     <div class="assessment-security">
       <span>◉</span>
       <p>
-        Suas respostas serão usadas apenas para personalizar sua experiência no HAIRCURA.
+        A foto é opcional. Nesta versão inicial, ela será usada apenas na
+        experiência da avaliação e não substitui as suas respostas.
       </p>
     </div>
 
   </main>
+
+  <!-- =======================================================
+       MODAL DE AJUDA / TESTES
+       ======================================================= -->
+
+  <div class="hair-help-modal" id="hairHelpModal" hidden>
+    <div class="hair-help-backdrop" data-close-help></div>
+
+    <div
+      class="hair-help-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="hairHelpTitle"
+    >
+      <button
+        class="hair-help-close"
+        type="button"
+        data-close-help
+        aria-label="Fechar ajuda"
+      >
+        ×
+      </button>
+
+      <div class="hair-help-icon">✦</div>
+
+      <span class="question-label" id="hairHelpEyebrow">
+        GUIA HAIRCURA
+      </span>
+
+      <h2 id="hairHelpTitle">
+        Vamos descobrir juntos
+      </h2>
+
+      <p id="hairHelpDescription">
+        Siga as orientações abaixo para encontrar a opção mais provável.
+      </p>
+
+      <div class="hair-help-content" id="hairHelpContent"></div>
+
+      <div class="hair-help-result" id="hairHelpResult" hidden></div>
+
+      <div class="hair-help-actions">
+        <button
+          class="hair-help-secondary"
+          type="button"
+          data-close-help
+        >
+          Voltar
+        </button>
+
+        <button
+          class="hair-help-primary"
+          type="button"
+          id="hairHelpNext"
+        >
+          Começar teste
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script src="avaliacao.js"></script>
 </body>
