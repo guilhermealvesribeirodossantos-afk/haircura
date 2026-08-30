@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070912">
+
+  <title>Avaliação Capilar — HAIRCURA</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="avaliacao.css">
+</head>
+
+<body class="assessment-page">
+
+  <header class="assessment-header">
+    <a class="brand" href="index.html" aria-label="Voltar para o início">
+      <span class="brand-mark">✦</span>
+      <span>HAIR<span>CURA</span></span>
+    </a>
+
+    <div class="assessment-progress-wrap">
+      <div class="assessment-progress-top">
+        <span>AVALIAÇÃO CAPILAR</span>
+        <strong id="progressText">1 de 10</strong>
+      </div>
+
+      <div class="assessment-progress">
+        <div
+          class="assessment-progress-bar"
+          id="progressBar"
+          style="width: 10%;"
+        ></div>
+      </div>
+    </div>
+
+    <button
+      class="assessment-close"
+      type="button"
+      id="closeAssessment"
+      aria-label="Fechar avaliação"
+    >
+      ×
+    </button>
+  </header>
+
+  <main class="assessment-shell">
+
+    <section class="assessment-intro">
+      <div class="assessment-badge">
+        <span>✦</span>
+        Avaliação inteligente
+      </div>
+
+      <h1>Vamos conhecer seu cabelo.</h1>
+
+      <p>
+        Responda algumas perguntas para o HAIRCURA entender as necessidades
+        dos seus fios e criar uma rotina personalizada.
+      </p>
+    </section>
+
+    <section class="assessment-card">
+
+      <!-- PERGUNTA 1 -->
+      <div class="question-step active" data-step="1">
+        <div class="question-heading">
+          <span class="question-number">01</span>
+
+          <div>
+            <span class="question-label">TIPO DE CABELO</span>
+            <h2>Qual é o seu tipo de cabelo?</h2>
+            <p>Escolha a opção que mais representa seus fios naturalmente.</p>
+          </div>
+        </div>
+
+        <div class="option-grid hair-type-grid">
+
+          <button class="answer-card" type="button" data-value="liso">
+            <div class="hair-icon hair-icon-straight">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <strong>Liso</strong>
+            <small>Tipo 1</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="ondulado">
+            <div class="hair-symbol">〰</div>
+            <strong>Ondulado</strong>
+            <small>Tipo 2</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="cacheado">
+            <div class="hair-symbol">➰</div>
+            <strong>Cacheado</strong>
+            <small>Tipo 3</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="crespo">
+            <div class="hair-symbol">◉</div>
+            <strong>Crespo</strong>
+            <small>Tipo 4</small>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- PERGUNTA 2 -->
+      <div class="question-step" data-step="2">
+        <div class="question-heading">
+          <span class="question-number">02</span>
+
+          <div>
+            <span class="question-label">CURVATURA</span>
+            <h2>Qual é a curvatura predominante?</h2>
+            <p>Escolha a opção que mais se aproxima do formato dos seus fios.</p>
+          </div>
+        </div>
+
+        <div class="option-grid curve-grid">
+          <button class="answer-card compact" type="button" data-value="1A">
+            <strong>1A</strong>
+            <small>Muito liso</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="1B">
+            <strong>1B</strong>
+            <small>Liso</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="1C">
+            <strong>1C</strong>
+            <small>Liso encorpado</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="2A">
+            <strong>2A</strong>
+            <small>Ondas leves</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="2B">
+            <strong>2B</strong>
+            <small>Ondas definidas</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="2C">
+            <strong>2C</strong>
+            <small>Ondas intensas</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="3A">
+            <strong>3A</strong>
+            <small>Cachos abertos</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="3B">
+            <strong>3B</strong>
+            <small>Cachos definidos</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="3C">
+            <strong>3C</strong>
+            <small>Cachos fechados</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="4A">
+            <strong>4A</strong>
+            <small>Crespo definido</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="4B">
+            <strong>4B</strong>
+            <small>Crespo denso</small>
+          </button>
+
+          <button class="answer-card compact" type="button" data-value="4C">
+            <strong>4C</strong>
+            <small>Crespo intenso</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 3 -->
+      <div class="question-step" data-step="3">
+        <div class="question-heading">
+          <span class="question-number">03</span>
+
+          <div>
+            <span class="question-label">ESPESSURA</span>
+            <h2>Como você considera a espessura dos fios?</h2>
+            <p>Pense na espessura de um único fio de cabelo.</p>
+          </div>
+        </div>
+
+        <div class="option-grid three-options">
+          <button class="answer-card" type="button" data-value="fino">
+            <div class="hair-symbol">│</div>
+            <strong>Fino</strong>
+            <small>Fios delicados e leves</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="medio">
+            <div class="hair-symbol">┃</div>
+            <strong>Médio</strong>
+            <small>Espessura intermediária</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="grosso">
+            <div class="hair-symbol">▌</div>
+            <strong>Grosso</strong>
+            <small>Fios mais encorpados</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 4 -->
+      <div class="question-step" data-step="4">
+        <div class="question-heading">
+          <span class="question-number">04</span>
+
+          <div>
+            <span class="question-label">POROSIDADE</span>
+            <h2>Como seu cabelo absorve água e produtos?</h2>
+            <p>Escolha a opção que mais combina com o comportamento dos fios.</p>
+          </div>
+        </div>
+
+        <div class="option-list">
+          <button class="answer-row" type="button" data-value="baixa">
+            <span class="row-icon">↓</span>
+            <span>
+              <strong>Baixa porosidade</strong>
+              <small>Demora para molhar e produtos parecem ficar na superfície.</small>
+            </span>
+          </button>
+
+          <button class="answer-row" type="button" data-value="media">
+            <span class="row-icon">↕</span>
+            <span>
+              <strong>Média porosidade</strong>
+              <small>Absorve e mantém hidratação de forma equilibrada.</small>
+            </span>
+          </button>
+
+          <button class="answer-row" type="button" data-value="alta">
+            <span class="row-icon">↑</span>
+            <span>
+              <strong>Alta porosidade</strong>
+              <small>Molha rápido, resseca rápido e pode apresentar mais danos.</small>
+            </span>
+          </button>
+
+          <button class="answer-row" type="button" data-value="nao-sei">
+            <span class="row-icon">?</span>
+            <span>
+              <strong>Não sei</strong>
+              <small>O HAIRCURA pode considerar outros sinais da avaliação.</small>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 5 -->
+      <div class="question-step" data-step="5">
+        <div class="question-heading">
+          <span class="question-number">05</span>
+
+          <div>
+            <span class="question-label">LAVAGEM</span>
+            <h2>Quantas vezes por semana você lava o cabelo?</h2>
+            <p>Isso ajuda a distribuir os tratamentos no cronograma.</p>
+          </div>
+        </div>
+
+        <div class="option-grid three-options">
+          <button class="answer-card" type="button" data-value="1-2">
+            <strong>1–2x</strong>
+            <small>por semana</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="3-4">
+            <strong>3–4x</strong>
+            <small>por semana</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="5+">
+            <strong>5x+</strong>
+            <small>por semana</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 6 -->
+      <div class="question-step" data-step="6">
+        <div class="question-heading">
+          <span class="question-number">06</span>
+
+          <div>
+            <span class="question-label">QUÍMICA</span>
+            <h2>Seu cabelo possui algum procedimento químico?</h2>
+            <p>Você poderá selecionar mais de uma opção.</p>
+          </div>
+        </div>
+
+        <div class="option-list multi-select-group">
+          <button class="answer-row multi" type="button" data-value="tintura">
+            <span class="row-icon">✦</span>
+            <span>
+              <strong>Tintura</strong>
+              <small>Coloração permanente ou tonalizante.</small>
+            </span>
+          </button>
+
+          <button class="answer-row multi" type="button" data-value="descoloracao">
+            <span class="row-icon">☼</span>
+            <span>
+              <strong>Descoloração</strong>
+              <small>Mechas, luzes, platinado ou descoloração total.</small>
+            </span>
+          </button>
+
+          <button class="answer-row multi" type="button" data-value="alisamento">
+            <span class="row-icon">≈</span>
+            <span>
+              <strong>Alisamento / progressiva</strong>
+              <small>Procedimentos para alteração da estrutura do fio.</small>
+            </span>
+          </button>
+
+          <button class="answer-row multi" type="button" data-value="nenhuma">
+            <span class="row-icon">✓</span>
+            <span>
+              <strong>Nenhuma química</strong>
+              <small>Meu cabelo não possui procedimentos químicos.</small>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 7 -->
+      <div class="question-step" data-step="7">
+        <div class="question-heading">
+          <span class="question-number">07</span>
+
+          <div>
+            <span class="question-label">CALOR</span>
+            <h2>Com que frequência você usa fontes de calor?</h2>
+            <p>Secador, chapinha, modelador ou outras ferramentas térmicas.</p>
+          </div>
+        </div>
+
+        <div class="option-grid three-options">
+          <button class="answer-card" type="button" data-value="raramente">
+            <strong>Raramente</strong>
+            <small>Quase nunca</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="as-vezes">
+            <strong>Às vezes</strong>
+            <small>1–2 vezes por semana</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="frequente">
+            <strong>Frequentemente</strong>
+            <small>3 vezes ou mais</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 8 -->
+      <div class="question-step" data-step="8">
+        <div class="question-heading">
+          <span class="question-number">08</span>
+
+          <div>
+            <span class="question-label">ESTADO ATUAL</span>
+            <h2>Como seu cabelo está atualmente?</h2>
+            <p>Selecione todos os sinais que você percebe nos fios.</p>
+          </div>
+        </div>
+
+        <div class="chips-grid multi-select-group">
+          <button class="answer-chip multi" type="button" data-value="ressecado">Ressecado</button>
+          <button class="answer-chip multi" type="button" data-value="frizz">Com frizz</button>
+          <button class="answer-chip multi" type="button" data-value="opaco">Sem brilho</button>
+          <button class="answer-chip multi" type="button" data-value="quebradico">Quebradiço</button>
+          <button class="answer-chip multi" type="button" data-value="poroso">Poroso</button>
+          <button class="answer-chip multi" type="button" data-value="oleoso">Oleoso</button>
+          <button class="answer-chip multi" type="button" data-value="sem-definicao">Sem definição</button>
+          <button class="answer-chip multi" type="button" data-value="embaraçando">Embaraçando muito</button>
+          <button class="answer-chip multi" type="button" data-value="saudavel">Parece saudável</button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 9 -->
+      <div class="question-step" data-step="9">
+        <div class="question-heading">
+          <span class="question-number">09</span>
+
+          <div>
+            <span class="question-label">OBJETIVO</span>
+            <h2>Qual é seu principal objetivo?</h2>
+            <p>Escolha o resultado que você mais deseja alcançar agora.</p>
+          </div>
+        </div>
+
+        <div class="option-grid three-options">
+          <button class="answer-card" type="button" data-value="recuperacao">
+            <div class="hair-symbol">✦</div>
+            <strong>Recuperação</strong>
+            <small>Melhorar fios danificados</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="maciez-brilho">
+            <div class="hair-symbol">◇</div>
+            <strong>Maciez e brilho</strong>
+            <small>Cabelo mais sedoso</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="definicao">
+            <div class="hair-symbol">➰</div>
+            <strong>Definição</strong>
+            <small>Valorizar ondas e cachos</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="frizz">
+            <div class="hair-symbol">≈</div>
+            <strong>Reduzir frizz</strong>
+            <small>Mais alinhamento</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="crescimento">
+            <div class="hair-symbol">↗</div>
+            <strong>Crescimento</strong>
+            <small>Manter fios fortes</small>
+          </button>
+
+          <button class="answer-card" type="button" data-value="manutencao">
+            <div class="hair-symbol">✓</div>
+            <strong>Manutenção</strong>
+            <small>Continuar saudável</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- PERGUNTA 10 -->
+      <div class="question-step" data-step="10">
+        <div class="question-heading">
+          <span class="question-number">10</span>
+
+          <div>
+            <span class="question-label">FINALIZAÇÃO</span>
+            <h2>Como você prefere sua rotina?</h2>
+            <p>Isso ajuda o HAIRCURA a deixar o cronograma mais realista para você.</p>
+          </div>
+        </div>
+
+        <div class="option-list">
+          <button class="answer-row" type="button" data-value="rapida">
+            <span class="row-icon">⚡</span>
+            <span>
+              <strong>Rápida e prática</strong>
+              <small>Quero uma rotina simples para encaixar no dia a dia.</small>
+            </span>
+          </button>
+
+          <button class="answer-row" type="button" data-value="equilibrada">
+            <span class="row-icon">◎</span>
+            <span>
+              <strong>Equilibrada</strong>
+              <small>Posso dedicar um pouco mais de tempo aos cuidados.</small>
+            </span>
+          </button>
+
+          <button class="answer-row" type="button" data-value="completa">
+            <span class="row-icon">✦</span>
+            <span>
+              <strong>Completa</strong>
+              <small>Quero uma experiência mais detalhada e completa.</small>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- NAVEGAÇÃO -->
+      <div class="assessment-actions">
+        <button
+          class="assessment-back"
+          type="button"
+          id="backButton"
+          disabled
+        >
+          ← Voltar
+        </button>
+
+        <button
+          class="assessment-next"
+          type="button"
+          id="nextButton"
+          disabled
+        >
+          Continuar →
+        </button>
+      </div>
+
+    </section>
+
+    <div class="assessment-security">
+      <span>◉</span>
+      <p>
+        Suas respostas serão usadas apenas para personalizar sua experiência no HAIRCURA.
+      </p>
+    </div>
+
+  </main>
+
+  <script src="avaliacao.js"></script>
+</body>
+</html>
