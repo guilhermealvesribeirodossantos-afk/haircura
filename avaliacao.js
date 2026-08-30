@@ -4,7 +4,7 @@
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("HAIRCURA avaliação JS V5 carregado");
+  console.log("HAIRCURA avaliação JS V6 carregado");
   const totalSteps = 10;
   let currentStep = 1;
 
@@ -603,21 +603,17 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    const referencePhoto = (src, title, caption, sourceUrl) => `
+    const referencePhoto = (src, title, caption) => `
       <figure class="help-reference-photo">
         <img
           src="${src}"
           alt="${title}"
           loading="lazy"
-          referrerpolicy="no-referrer"
           onerror="this.closest('.help-reference-photo').classList.add('image-error')"
         >
         <figcaption>
           <strong>${title}</strong>
           <span>${caption}</span>
-          <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer">
-            Ver fonte da imagem ↗
-          </a>
         </figcaption>
       </figure>
     `;
@@ -627,44 +623,39 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="help-photo-heading">
           <span>FOTOS DE REFERÊNCIA</span>
           <p>
-            Use as imagens apenas para comparar o formato geral. Textura, iluminação,
-            finalização e mistura de padrões podem mudar bastante a aparência.
+            Compare o formato predominante do seu cabelo em estado natural.
+            É normal ter mais de uma curvatura em regiões diferentes.
           </p>
         </div>
 
         <div class="help-reference-grid">
           ${referencePhoto(
-            "https://commons.wikimedia.org/wiki/Special:Redirect/file/KatharineShepard1928.png?width=700",
-            "Referência de cabelo liso",
-            "Exemplo fotográfico de cabelo predominantemente reto.",
-            "https://commons.wikimedia.org/wiki/File:KatharineShepard1928.png"
+            "haircura-tipo-1-liso.png",
+            "Liso — Tipo 1",
+            "Fio predominantemente reto, sem formação marcada de ondas ou cachos."
           )}
 
           ${referencePhoto(
-            "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vintage_studio_portrait_woman_with_wavy_hair.jpg?width=700",
-            "Referência de cabelo ondulado",
-            "Exemplo com ondas visíveis no comprimento.",
-            "https://commons.wikimedia.org/wiki/File:Vintage_studio_portrait_woman_with_wavy_hair.jpg"
+            "haircura-tipo-2-ondulado.png",
+            "Ondulado — Tipo 2",
+            "Ondas naturais em formato de S, mais suaves ou mais definidas."
           )}
 
           ${referencePhoto(
-            "https://commons.wikimedia.org/wiki/Special:Redirect/file/Woman_with_curly_hair_1.jpg?width=700",
-            "Referência de cabelo cacheado",
-            "Exemplo com cachos e espirais aparentes.",
-            "https://commons.wikimedia.org/wiki/File:Woman_with_curly_hair_1.jpg"
+            "haircura-tipo-3-cacheado.png",
+            "Cacheado — Tipo 3",
+            "Cachos e espirais visíveis, variando de mais abertos a mais fechados."
           )}
 
           ${referencePhoto(
-            "https://commons.wikimedia.org/wiki/Special:Redirect/file/Woman_with_afro-textured_hair_(cropped).jpg?width=700",
-            "Referência de cabelo crespo",
-            "Exemplo de cabelo com textura afro e curvatura muito fechada.",
-            "https://commons.wikimedia.org/wiki/File:Woman_with_afro-textured_hair_(cropped).jpg"
+            "haircura-tipo-4-crespo.png",
+            "Crespo — Tipo 4",
+            "Curvaturas muito fechadas, pequenas espirais ou padrões compactos."
           )}
         </div>
 
         <p class="help-photo-disclaimer">
-          Uma fotografia sozinha não determina com precisão a classificação do cabelo.
-          Confirme sempre observando seus próprios fios em estado natural.
+          As imagens são referências visuais. Confirme a resposta observando o padrão predominante dos seus próprios fios.
         </p>
       </div>
     `;
@@ -1771,14 +1762,6 @@ document.addEventListener("DOMContentLoaded", () => {
         color: #837d8f;
         font-size: .64rem;
         line-height: 1.4;
-      }
-
-      .help-reference-photo figcaption a {
-        display: inline-block;
-        margin-top: 7px;
-        color: #b49cff;
-        font-size: .61rem;
-        text-decoration: none;
       }
 
       .help-reference-photo.image-error img {
