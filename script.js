@@ -1,169 +1,161 @@
 // ==========================================================
 // HAIRCURA — script.js
-// Interações da Landing Page
+// Página inicial
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  const menuButton = document.querySelector(".menu-button");
-  const topbar = document.querySelector(".topbar");
-  const nav = document.querySelector(".desktop-nav");
-  const topActions = document.querySelector(".top-actions");
+  // --------------------------------------------------------
+  // 1. BOTÕES "FAZER AVALIAÇÃO"
+  // --------------------------------------------------------
+  const assessmentButtons = [
+    ...document.querySelectorAll('a[href="#avaliacao"]'),
+    ...document.querySelectorAll('[data-action="avaliacao"]'),
+    ...document.querySelectorAll(".btn-primary")
+  ];
 
-  // ----------------------------------------------------------
-  // MENU MOBILE
-  // ----------------------------------------------------------
+  assessmentButtons.forEach((button) => {
+    const text = button.textContent.trim().toLowerCase();
 
-  if (menuButton && topbar && nav && topActions) {
-    const mobileMenu = document.createElement("div");
-    mobileMenu.className = "mobile-menu";
+    if (
+      text.includes("fazer avaliação") ||
+      text.includes("começar avaliação") ||
+      text.includes("iniciar avaliação")
+    ) {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.location.href = "avaliacao.html";
+      });
+    }
+  });
 
-    mobileMenu.innerHTML = `
-      <nav class="mobile-nav" aria-label="Navegação mobile">
-        <a href="#inicio">Início</a>
-        <a href="#como-funciona">Como funciona</a>
-        <a href="#recursos">Recursos</a>
-        <a href="#resultados">Resultados</a>
-      </nav>
-
-      <div class="mobile-actions">
-        <button class="btn btn-ghost mobile-login" type="button">
-          Entrar
-        </button>
-
-        <button class="btn btn-primary mobile-create-account" type="button">
-          Criar conta
-        </button>
-      </div>
-    `;
-
-    topbar.appendChild(mobileMenu);
-
-    const closeMenu = () => {
-      topbar.classList.remove("menu-open");
-      menuButton.textContent = "☰";
-      menuButton.setAttribute("aria-label", "Abrir menu");
-    };
-
-    const openMenu = () => {
-      topbar.classList.add("menu-open");
-      menuButton.textContent = "×";
-      menuButton.setAttribute("aria-label", "Fechar menu");
-    };
-
-    menuButton.addEventListener("click", () => {
-      if (topbar.classList.contains("menu-open")) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    mobileMenu.querySelectorAll('a[href^="#"]').forEach((link) => {
-      link.addEventListener("click", closeMenu);
-    });
-
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 980) {
-        closeMenu();
-      }
-    });
-  }
-
-  // ----------------------------------------------------------
-  // SCROLL SUAVE PARA LINKS INTERNOS
-  // ----------------------------------------------------------
-
+  // --------------------------------------------------------
+  // 2. LINKS COM ROLAGEM SUAVE
+  // --------------------------------------------------------
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
-      const id = link.getAttribute("href");
+      const href = link.getAttribute("href");
 
-      if (!id || id === "#") return;
+      if (!href || href === "#") return;
 
-      const target = document.querySelector(id);
+      const target = document.querySelector(href);
 
       if (!target) return;
 
       event.preventDefault();
 
-      const headerOffset = 105;
-      const targetPosition =
-        target.getBoundingClientRect().top +
-        window.scrollY -
-        headerOffset;
-
-      window.scrollTo({
-        top: targetPosition,
+      target.scrollIntoView({
         behavior: "smooth",
+        block: "start"
       });
     });
   });
 
-  // ----------------------------------------------------------
-  // HEADER AO ROLAR
-  // ----------------------------------------------------------
+  // --------------------------------------------------------
+  // 3. CABEÇALHO AO ROLAR
+  // --------------------------------------------------------
+  const topbar = document.querySelector(".topbar");
 
-  const updateHeader = () => {
+  function updateHeader() {
     if (!topbar) return;
 
-    if (window.scrollY > 35) {
-      topbar.classList.add("topbar-scrolled");
+    if (window.scrollY > 18) {
+      topbar.classList.add("scrolled");
     } else {
-      topbar.classList.remove("topbar-scrolled");
+      topbar.classList.remove("scrolled");
     }
-  };
+  }
 
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
 
-  // ----------------------------------------------------------
-  // ANIMAÇÃO DOS ELEMENTOS AO ENTRAR NA TELA
-  // ----------------------------------------------------------
+  // --------------------------------------------------------
+  // 4. MENU MOBILE
+  // --------------------------------------------------------
+  const menuButton =
+    document.querySelector(".menu-button") ||
+    document.querySelector(".menu-toggle");
 
+  if (menuButton) {
+    let mobileMenu = document.querySelector(".mobile-menu");
+
+    if (!mobileMenu) {
+      mobileMenu = document.createElement("div");
+      mobileMenu.className = "mobile-menu";
+
+      mobileMenu.innerHTML = `
+        <a href="#inicio">Início</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#resultados">Resultados</a>
+
+        <div class="mobile-menu-actions">
+          <button type="button" data-mobile-action="login">Entrar</button>
+          <button type="button" data-mobile-action="register">Criar conta</button>
+        </div>
+      `;
+
+      document.body.appendChild(mobileMenu);
+    }
+
+    menuButton.addEventListener("click", () => {
+      menuButton.classList.toggle("active");
+      mobileMenu.classList.toggle("active");
+      document.body.classList.toggle("menu-open");
+    });
+
+    mobileMenu.querySelectorAll('a[href^="#"]').forEach((link) => {
+      link.addEventListener("click", () => {
+        menuButton.classList.remove("active");
+        mobileMenu.classList.remove("active");
+        document.body.classList.remove("menu-open");
+      });
+    });
+  }
+
+  // --------------------------------------------------------
+  // 5. ANIMAÇÕES DE ENTRADA
+  // --------------------------------------------------------
   const revealElements = document.querySelectorAll(
-    ".section-heading, .step-card, .feature-card, .preview-copy, .phone-preview, .final-cta"
+    ".section, .feature-card, .step-card, .preview, .hero-copy, .hero-visual"
   );
-
-  revealElements.forEach((element) => {
-    element.classList.add("reveal");
-  });
 
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("reveal-visible");
+            entry.target.classList.add("revealed");
             observer.unobserve(entry.target);
           }
         });
       },
       {
-        threshold: 0.12,
-        rootMargin: "0px 0px -45px 0px",
+        threshold: 0.12
       }
     );
 
-    revealElements.forEach((element) => observer.observe(element));
+    revealElements.forEach((element) => {
+      element.classList.add("reveal-ready");
+      observer.observe(element);
+    });
   } else {
-    revealElements.forEach((element) =>
-      element.classList.add("reveal-visible")
-    );
+    revealElements.forEach((element) => {
+      element.classList.add("revealed");
+    });
   }
 
-  // ----------------------------------------------------------
-  // EFEITO 3D SUAVE NO CARD DO HERO
-  // ----------------------------------------------------------
+  // --------------------------------------------------------
+  // 6. EFEITO 3D NO CARD DO HERO (DESKTOP)
+  // --------------------------------------------------------
+  const heroCard =
+    document.querySelector(".hero-card") ||
+    document.querySelector(".haircura-card");
 
-  const heroVisual = document.querySelector(".hero-visual");
-  const heroCard = document.querySelector(".hero-card");
+  const finePointer = window.matchMedia("(pointer: fine)");
 
-  if (
-    heroVisual &&
-    heroCard &&
-    window.matchMedia("(pointer: fine)").matches
-  ) {
-    heroVisual.addEventListener("mousemove", (event) => {
-      const rect = heroVisual.getBoundingClientRect();
+  if (heroCard && finePointer.matches) {
+    heroCard.addEventListener("mousemove", (event) => {
+      const rect = heroCard.getBoundingClientRect();
 
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -171,361 +163,384 @@ document.addEventListener("DOMContentLoaded", () => {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
 
-      const rotateY = ((x - centerX) / centerX) * 5;
-      const rotateX = ((centerY - y) / centerY) * 5;
+      const rotateX = ((y - centerY) / centerY) * -3.5;
+      const rotateY = ((x - centerX) / centerX) * 4.5;
 
       heroCard.style.transform =
         `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
 
-    heroVisual.addEventListener("mouseleave", () => {
+    heroCard.addEventListener("mouseleave", () => {
       heroCard.style.transform =
         "perspective(900px) rotateX(0deg) rotateY(0deg)";
     });
   }
 
-  // ----------------------------------------------------------
-  // CONTADOR ANIMADO DO SCORE CAPILAR
-  // ----------------------------------------------------------
+  // --------------------------------------------------------
+  // 7. ANIMAÇÃO DO SCORE 78%
+  // --------------------------------------------------------
+  const scoreElements = [...document.querySelectorAll("*")].filter((element) => {
+    return (
+      element.children.length === 0 &&
+      element.textContent.trim() === "78%"
+    );
+  });
 
-  const score = document.querySelector(".score-ring strong");
-
-  if (score) {
-    const finalScore = 78;
-    let currentScore = 0;
+  scoreElements.forEach((scoreElement) => {
+    let started = false;
 
     const animateScore = () => {
-      currentScore += 1;
-      score.textContent = `${currentScore}%`;
+      if (started) return;
+      started = true;
 
-      if (currentScore < finalScore) {
-        requestAnimationFrame(animateScore);
+      const target = 78;
+      const duration = 900;
+      const startTime = performance.now();
+
+      function frame(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(target * eased);
+
+        scoreElement.textContent = `${value}%`;
+
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+        }
       }
+
+      requestAnimationFrame(frame);
     };
 
-    setTimeout(animateScore, 500);
-  }
+    if ("IntersectionObserver" in window) {
+      const scoreObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            animateScore();
+            scoreObserver.disconnect();
+          }
+        },
+        { threshold: 0.5 }
+      );
 
-  // ----------------------------------------------------------
-  // BOTÕES PRINCIPAIS
-  // Por enquanto levam para a futura Avaliação Capilar.
-  // Na próxima etapa criaremos essa página de verdade.
-  // ----------------------------------------------------------
+      scoreObserver.observe(scoreElement);
+    } else {
+      animateScore();
+    }
+  });
 
-  const evaluationButtons = [
-    ...document.querySelectorAll(".hero .btn-primary"),
-    ...document.querySelectorAll(".final-cta .btn-primary"),
+  // --------------------------------------------------------
+  // 8. BOTÕES QUE AINDA SERÃO CONSTRUÍDOS
+  // --------------------------------------------------------
+  const loginButtons = [
+    ...document.querySelectorAll('[data-action="login"]'),
+    ...document.querySelectorAll('[data-mobile-action="login"]')
   ];
 
-  evaluationButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      showToast(
-        "Avaliação Capilar",
-        "Essa será a próxima tela que vamos construir."
-      );
-    });
+  const registerButtons = [
+    ...document.querySelectorAll('[data-action="register"]'),
+    ...document.querySelectorAll('[data-mobile-action="register"]')
+  ];
+
+  document.querySelectorAll("button, a").forEach((element) => {
+    const text = element.textContent.trim().toLowerCase();
+
+    if (text === "entrar" && !loginButtons.includes(element)) {
+      loginButtons.push(element);
+    }
+
+    if (text === "criar conta" && !registerButtons.includes(element)) {
+      registerButtons.push(element);
+    }
   });
-
-  // ----------------------------------------------------------
-  // LOGIN E CADASTRO
-  // ----------------------------------------------------------
-
-  const loginButtons = document.querySelectorAll(
-    ".top-actions .btn-ghost, .mobile-login"
-  );
-
-  const createAccountButtons = document.querySelectorAll(
-    ".top-actions .btn-primary, .mobile-create-account"
-  );
 
   loginButtons.forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
       showToast(
         "Login",
-        "A tela de login será adicionada nas próximas etapas."
+        "A tela de login será construída em uma próxima etapa."
       );
     });
   });
 
-  createAccountButtons.forEach((button) => {
-    button.addEventListener("click", () => {
+  registerButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
       showToast(
         "Criar conta",
-        "O cadastro dos usuários será conectado ao HAIRCURA."
+        "O cadastro será conectado ao sistema de usuários do HAIRCURA."
       );
     });
   });
 
-  // ----------------------------------------------------------
-  // ROTINA COMPLETA NA PRÉVIA DO CELULAR
-  // ----------------------------------------------------------
-
-  const routineButton = document.querySelector(".today-card button");
-
-  if (routineButton) {
-    routineButton.addEventListener("click", () => {
-      showToast(
-        "Rotina de Hidratação",
-        "Em breve essa área terá o passo a passo completo do tratamento."
-      );
-    });
-  }
-
-  // ----------------------------------------------------------
-  // TOAST / AVISO BONITO
-  // ----------------------------------------------------------
-
+  // --------------------------------------------------------
+  // 9. TOAST
+  // --------------------------------------------------------
   function showToast(title, message) {
-    const oldToast = document.querySelector(".haircura-toast");
+    const previousToast = document.querySelector(".haircura-toast");
 
-    if (oldToast) {
-      oldToast.remove();
+    if (previousToast) {
+      previousToast.remove();
     }
 
     const toast = document.createElement("div");
     toast.className = "haircura-toast";
 
     toast.innerHTML = `
-      <div class="toast-icon">✦</div>
+      <div class="haircura-toast-icon">✦</div>
 
-      <div class="toast-content">
+      <div class="haircura-toast-content">
         <strong>${title}</strong>
         <span>${message}</span>
       </div>
 
-      <button class="toast-close" type="button" aria-label="Fechar">
-        ×
-      </button>
+      <button type="button" aria-label="Fechar">×</button>
     `;
 
     document.body.appendChild(toast);
 
     requestAnimationFrame(() => {
-      toast.classList.add("toast-visible");
+      toast.classList.add("visible");
     });
 
-    const removeToast = () => {
-      toast.classList.remove("toast-visible");
+    const closeButton = toast.querySelector("button");
 
-      setTimeout(() => {
-        toast.remove();
-      }, 260);
-    };
+    closeButton.addEventListener("click", () => {
+      closeToast(toast);
+    });
 
-    toast
-      .querySelector(".toast-close")
-      .addEventListener("click", removeToast);
-
-    setTimeout(removeToast, 4300);
-  }
-});
-
-// ==========================================================
-// CSS DAS INTERAÇÕES
-// Adicionado via JavaScript para não precisar alterar o
-// style.css que você já colocou no GitHub nesta etapa.
-// ==========================================================
-
-const interactionStyles = document.createElement("style");
-
-interactionStyles.textContent = `
-  .topbar {
-    transition:
-      background .25s ease,
-      border-color .25s ease,
-      box-shadow .25s ease;
+    setTimeout(() => {
+      closeToast(toast);
+    }, 3600);
   }
 
-  .topbar.topbar-scrolled {
-    background: rgba(7, 8, 14, .92);
-    border-color: rgba(138, 92, 255, .16);
-    box-shadow:
-      0 16px 42px rgba(0, 0, 0, .35),
-      0 0 35px rgba(138, 92, 255, .05);
+  function closeToast(toast) {
+    if (!toast || !toast.isConnected) return;
+
+    toast.classList.remove("visible");
+
+    setTimeout(() => {
+      toast.remove();
+    }, 220);
   }
 
-  .mobile-menu {
-    display: none;
-  }
+  // --------------------------------------------------------
+  // 10. ESTILOS COMPLEMENTARES
+  // --------------------------------------------------------
+  const dynamicStyle = document.createElement("style");
 
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition:
-      opacity .7s ease,
-      transform .7s ease;
-  }
+  dynamicStyle.textContent = `
+    .reveal-ready {
+      opacity: 0;
+      transform: translateY(18px);
+      transition:
+        opacity .6s ease,
+        transform .6s ease;
+    }
 
-  .reveal.reveal-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    .reveal-ready.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-  .haircura-toast {
-    position: fixed;
-    z-index: 9999;
-    right: 22px;
-    bottom: 22px;
-    width: min(390px, calc(100vw - 30px));
-    padding: 15px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 12px;
+    .topbar.scrolled {
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .28);
+    }
 
-    color: #f8f8ff;
-    background:
-      linear-gradient(
-        135deg,
-        rgba(138, 92, 255, .13),
-        rgba(255, 79, 184, .08)
-      ),
-      rgba(11, 12, 20, .94);
-
-    border: 1px solid rgba(138, 92, 255, .22);
-    border-radius: 18px;
-    box-shadow:
-      0 24px 60px rgba(0, 0, 0, .45),
-      0 0 30px rgba(138, 92, 255, .10);
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
-    opacity: 0;
-    transform: translateY(20px) scale(.98);
-    pointer-events: none;
-
-    transition:
-      opacity .25s ease,
-      transform .25s ease;
-  }
-
-  .haircura-toast.toast-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-  }
-
-  .toast-icon {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 13px;
-    color: white;
-    background: linear-gradient(135deg, #8a5cff, #ff4fb8);
-    box-shadow: 0 0 24px rgba(138, 92, 255, .25);
-  }
-
-  .toast-content {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .toast-content strong {
-    font-size: .9rem;
-  }
-
-  .toast-content span {
-    color: #9e9caf;
-    font-size: .78rem;
-    line-height: 1.45;
-  }
-
-  .toast-close {
-    width: 32px;
-    height: 32px;
-    display: grid;
-    place-items: center;
-    border: 0;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, .05);
-    color: #b7b6c8;
-    cursor: pointer;
-    font-size: 1.15rem;
-  }
-
-  @media (max-width: 980px) {
-    .topbar.menu-open {
-      border-radius: 20px 20px 0 0;
+    .hero-card,
+    .haircura-card {
+      transition: transform .18s ease;
+      transform-style: preserve-3d;
     }
 
     .mobile-menu {
-      position: absolute;
-      top: calc(100% - 1px);
-      left: -1px;
-      right: -1px;
-      padding: 15px;
-      border: 1px solid rgba(255, 255, 255, .08);
-      border-top: 0;
-      border-radius: 0 0 20px 20px;
-      background: rgba(8, 9, 16, .97);
+      position: fixed;
+      top: 82px;
+      left: 12px;
+      right: 12px;
+      z-index: 9998;
+
+      padding: 14px;
+
+      display: grid;
+      gap: 8px;
+
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 20px;
+
+      background: rgba(8,9,16,.97);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
-      box-shadow: 0 22px 35px rgba(0, 0, 0, .32);
+
+      box-shadow: 0 22px 60px rgba(0,0,0,.42);
+
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+
+      transition:
+        opacity .22s ease,
+        transform .22s ease,
+        visibility .22s ease;
     }
 
-    .topbar.menu-open .mobile-menu {
-      display: block;
-      animation: haircuraMenu .22s ease both;
+    .mobile-menu.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
 
-    .mobile-nav {
-      display: grid;
+    .mobile-menu > a {
+      padding: 13px 14px;
+      border-radius: 13px;
+      color: #bcb7c8;
+      text-decoration: none;
+      font-weight: 700;
     }
 
-    .mobile-nav a {
-      padding: 14px 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, .055);
-      color: #b7b6c8;
-      font-size: .9rem;
-    }
-
-    .mobile-nav a:hover {
+    .mobile-menu > a:hover {
+      background: rgba(255,255,255,.045);
       color: white;
     }
 
-    .mobile-actions {
+    .mobile-menu-actions {
+      padding-top: 10px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding-top: 15px;
+      gap: 9px;
+      border-top: 1px solid rgba(255,255,255,.06);
     }
 
-    @keyframes haircuraMenu {
-      from {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .mobile-menu-actions button {
+      min-height: 44px;
+      border-radius: 13px;
+      font-weight: 800;
+      cursor: pointer;
     }
-  }
 
-  @media (max-width: 540px) {
-    .mobile-actions {
-      grid-template-columns: 1fr;
+    .mobile-menu-actions button:first-child {
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.04);
+      color: white;
+    }
+
+    .mobile-menu-actions button:last-child {
+      border: 0;
+      background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
+      color: white;
     }
 
     .haircura-toast {
-      left: 15px;
-      right: 15px;
-      bottom: 15px;
-      width: auto;
-    }
-  }
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
 
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
+      width: min(390px, calc(100vw - 28px));
+      padding: 14px;
+
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+
+      border: 1px solid rgba(139,92,246,.27);
+      border-radius: 18px;
+
+      background: rgba(24,13,34,.96);
+      box-shadow: 0 22px 60px rgba(0,0,0,.4);
+
+      opacity: 0;
+      transform: translateY(16px);
+
+      transition:
+        opacity .22s ease,
+        transform .22s ease;
+    }
+
+    .haircura-toast.visible {
       opacity: 1;
-      transform: none;
+      transform: translateY(0);
     }
-  }
-`;
 
-document.head.appendChild(interactionStyles);
+    .haircura-toast-icon {
+      width: 42px;
+      height: 42px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 13px;
+
+      background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
+      color: white;
+    }
+
+    .haircura-toast-content {
+      min-width: 0;
+
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .haircura-toast-content strong {
+      color: white;
+      font-size: .86rem;
+    }
+
+    .haircura-toast-content span {
+      color: #a59ead;
+      font-size: .76rem;
+      line-height: 1.35;
+    }
+
+    .haircura-toast > button {
+      width: 34px;
+      height: 34px;
+
+      border: 0;
+      border-radius: 10px;
+
+      background: rgba(255,255,255,.05);
+      color: #9c94a5;
+
+      cursor: pointer;
+    }
+
+    @media (min-width: 761px) {
+      .mobile-menu {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body.menu-open {
+        overflow: hidden;
+      }
+
+      .haircura-toast {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        width: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal-ready {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+
+      .hero-card,
+      .haircura-card {
+        transform: none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(dynamicStyle);
+});
