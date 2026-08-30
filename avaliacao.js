@@ -1,11 +1,11 @@
 // ==========================================================
-// HAIRCURA — avaliacao.js
-// Lógica da Avaliação Capilar Inteligente
+// HAIRCURA — avaliacao.js V2
+// Foto + questionário + testes guiados
 // ==========================================================
 
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("HAIRCURA avaliação JS V3 carregado");
   const totalSteps = 10;
-
   let currentStep = 1;
 
   const answers = {
@@ -42,16 +42,201 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextButton = document.getElementById("nextButton");
   const closeAssessment = document.getElementById("closeAssessment");
 
-  // ----------------------------------------------------------
-  // INICIALIZAÇÃO
-  // ----------------------------------------------------------
+  const photoInput = document.getElementById("hairPhotoInput");
+  const selectPhotoButton = document.getElementById("selectPhotoButton");
+  const changePhotoButton = document.getElementById("changePhotoButton");
+  const removePhotoButton = document.getElementById("removePhotoButton");
+  const analyzePhotoButton = document.getElementById("analyzePhotoButton");
+  const skipPhotoButton = document.getElementById("skipPhotoButton");
+  const photoEmptyState = document.getElementById("photoEmptyState");
+  const photoPreviewState = document.getElementById("photoPreviewState");
+  const hairPhotoPreview = document.getElementById("hairPhotoPreview");
+  const photoAnalysisResult = document.getElementById("photoAnalysisResult");
+
+  const hairHelpModal = document.getElementById("hairHelpModal");
+  const hairHelpTitle = document.getElementById("hairHelpTitle");
+  const hairHelpEyebrow = document.getElementById("hairHelpEyebrow");
+  const hairHelpDescription = document.getElementById("hairHelpDescription");
+  const hairHelpContent = document.getElementById("hairHelpContent");
+  const hairHelpResult = document.getElementById("hairHelpResult");
+  const hairHelpNext = document.getElementById("hairHelpNext");
+
+  let selectedPhotoFile = null;
+  let photoObjectUrl = null;
+  let currentHelpType = null;
+  let helpStage = 0;
+  let helpSelections = {};
 
   restoreSavedAnswers();
   showStep(currentStep);
+  setupPhotoArea();
+  setupHelpSystem();
+  injectDynamicStyles();
 
-  // ----------------------------------------------------------
-  // CLIQUES NAS RESPOSTAS
-  // ----------------------------------------------------------
+  // ========================================================
+  // FOTO
+  // ========================================================
+
+  function setupPhotoArea() {
+    if (!photoInput) return;
+
+    [selectPhotoButton, changePhotoButton].forEach((button) => {
+      if (!button) return;
+
+      button.addEventListener("click", () => {
+        photoInput.click();
+      });
+    });
+
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files && photoInput.files[0];
+
+      if (!file) return;
+
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        showToast(
+          "Formato não suportado",
+          "Escolha uma imagem JPG, PNG ou WEBP."
+        );
+
+        photoInput.value = "";
+        return;
+      }
+
+      const maxSize = 10 * 1024 * 1024;
+
+      if (file.size > maxSize) {
+        showToast(
+          "Imagem muito grande",
+          "Escolha uma foto com até 10 MB."
+        );
+
+        photoInput.value = "";
+        return;
+      }
+
+      selectedPhotoFile = file;
+
+      if (photoObjectUrl) {
+        URL.revokeObjectURL(photoObjectUrl);
+      }
+
+      photoObjectUrl = URL.createObjectURL(file);
+      hairPhotoPreview.src = photoObjectUrl;
+
+      photoEmptyState.hidden = true;
+      photoPreviewState.hidden = false;
+      analyzePhotoButton.disabled = false;
+
+      photoAnalysisResult.hidden = true;
+
+      showToast(
+        "Foto adicionada",
+        "Agora você pode iniciar a análise visual."
+      );
+    });
+
+    if (removePhotoButton) {
+      removePhotoButton.addEventListener("click", () => {
+        clearPhoto();
+      });
+    }
+
+    if (skipPhotoButton) {
+      skipPhotoButton.addEventListener("click", () => {
+        scrollToQuestions();
+      });
+    }
+
+    if (analyzePhotoButton) {
+      analyzePhotoButton.addEventListener("click", () => {
+        if (!selectedPhotoFile) return;
+
+        runPhotoPreparation();
+      });
+    }
+  }
+
+  function clearPhoto() {
+    selectedPhotoFile = null;
+
+    if (photoObjectUrl) {
+      URL.revokeObjectURL(photoObjectUrl);
+      photoObjectUrl = null;
+    }
+
+    photoInput.value = "";
+    hairPhotoPreview.removeAttribute("src");
+
+    photoEmptyState.hidden = false;
+    photoPreviewState.hidden = true;
+    photoAnalysisResult.hidden = true;
+    analyzePhotoButton.disabled = true;
+  }
+
+  function runPhotoPreparation() {
+    analyzePhotoButton.disabled = true;
+    analyzePhotoButton.textContent = "✦ Preparando foto...";
+
+    setTimeout(() => {
+      document.getElementById("photoHairType").textContent =
+        "Confirmar nas perguntas";
+
+      document.getElementById("photoCurlType").textContent =
+        "Confirmar nas perguntas";
+
+      document.getElementById("photoThickness").textContent =
+        "Teste + análise visual";
+
+      document.getElementById("photoVisualSigns").textContent =
+        "Foto pronta";
+
+      document.getElementById("photoConfidence").textContent =
+        "imagem carregada";
+
+      photoAnalysisResult.hidden = false;
+
+      analyzePhotoButton.disabled = false;
+      analyzePhotoButton.textContent = "✦ Analisar novamente";
+
+      showToast(
+        "Foto preparada",
+        "A imagem foi carregada. Use as perguntas e testes para confirmar seu perfil."
+      );
+
+      /*
+        IMPORTANTE:
+        Nesta versão em GitHub Pages, não inventamos uma classificação visual.
+
+        Para reconhecimento REAL da foto, o próximo passo será enviar a imagem
+        para um serviço de visão/IA através de um backend seguro, como uma
+        Supabase Edge Function. A chave da IA nunca deve ficar neste arquivo.
+      */
+
+      setTimeout(scrollToQuestions, 450);
+    }, 850);
+  }
+
+  function scrollToQuestions() {
+    const questions = document.getElementById("assessmentQuestions");
+
+    if (!questions) return;
+
+    questions.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  // ========================================================
+  // QUESTIONÁRIO
+  // ========================================================
 
   document.querySelectorAll(".question-step").forEach((stepElement) => {
     const stepNumber = Number(stepElement.dataset.step);
@@ -72,10 +257,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // ----------------------------------------------------------
-  // SELEÇÃO ÚNICA
-  // ----------------------------------------------------------
-
   function handleSingleSelect(stepNumber, button) {
     const stepElement = getStepElement(stepNumber);
     const key = stepKeys[stepNumber];
@@ -85,13 +266,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .forEach((item) => item.classList.remove("selected"));
 
     button.classList.add("selected");
-
     answers[key] = button.dataset.value;
   }
-
-  // ----------------------------------------------------------
-  // SELEÇÃO MÚLTIPLA
-  // ----------------------------------------------------------
 
   function handleMultiSelect(stepNumber, button) {
     const key = stepKeys[stepNumber];
@@ -101,7 +277,6 @@ document.addEventListener("DOMContentLoaded", () => {
       answers[key] = [];
     }
 
-    // Passo 6: "Nenhuma química" exclui todas as outras.
     if (stepNumber === 6 && value === "nenhuma") {
       getStepElement(stepNumber)
         .querySelectorAll(".multi")
@@ -112,19 +287,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Se selecionar qualquer química, remove "nenhuma".
     if (stepNumber === 6 && value !== "nenhuma") {
       const noneButton = getStepElement(stepNumber)
         .querySelector('[data-value="nenhuma"]');
 
-      if (noneButton) {
-        noneButton.classList.remove("selected");
-      }
+      if (noneButton) noneButton.classList.remove("selected");
 
-      answers[key] = answers[key].filter((item) => item !== "nenhuma");
+      answers[key] = answers[key].filter(
+        (item) => item !== "nenhuma"
+      );
     }
 
-    // Passo 8: "Parece saudável" exclui os sinais de dano.
     if (stepNumber === 8 && value === "saudavel") {
       getStepElement(stepNumber)
         .querySelectorAll(".multi")
@@ -135,16 +308,15 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Se selecionar algum sinal, remove "saudável".
     if (stepNumber === 8 && value !== "saudavel") {
       const healthyButton = getStepElement(stepNumber)
         .querySelector('[data-value="saudavel"]');
 
-      if (healthyButton) {
-        healthyButton.classList.remove("selected");
-      }
+      if (healthyButton) healthyButton.classList.remove("selected");
 
-      answers[key] = answers[key].filter((item) => item !== "saudavel");
+      answers[key] = answers[key].filter(
+        (item) => item !== "saudavel"
+      );
     }
 
     button.classList.toggle("selected");
@@ -154,27 +326,24 @@ document.addEventListener("DOMContentLoaded", () => {
         answers[key].push(value);
       }
     } else {
-      answers[key] = answers[key].filter((item) => item !== value);
+      answers[key] = answers[key].filter(
+        (item) => item !== value
+      );
     }
   }
 
-  // ----------------------------------------------------------
-  // BOTÃO CONTINUAR
-  // ----------------------------------------------------------
-
   nextButton.addEventListener("click", () => {
-    if (!isCurrentStepAnswered()) {
-      return;
-    }
+    if (!isCurrentStepAnswered()) return;
 
     if (currentStep < totalSteps) {
       currentStep += 1;
       showStep(currentStep);
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      document.getElementById("assessmentQuestions")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
 
       return;
     }
@@ -182,46 +351,33 @@ document.addEventListener("DOMContentLoaded", () => {
     finishAssessment();
   });
 
-  // ----------------------------------------------------------
-  // BOTÃO VOLTAR
-  // ----------------------------------------------------------
-
   backButton.addEventListener("click", () => {
     if (currentStep <= 1) return;
 
     currentStep -= 1;
     showStep(currentStep);
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    document.getElementById("assessmentQuestions")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
   });
-
-  // ----------------------------------------------------------
-  // FECHAR AVALIAÇÃO
-  // ----------------------------------------------------------
 
   closeAssessment.addEventListener("click", () => {
     const hasAnswers = Object.values(answers).some((value) => {
-      if (Array.isArray(value)) {
-        return value.length > 0;
-      }
-
-      return Boolean(value);
+      return Array.isArray(value)
+        ? value.length > 0
+        : Boolean(value);
     });
 
-    if (!hasAnswers) {
+    if (!hasAnswers && !selectedPhotoFile) {
       window.location.href = "index.html";
       return;
     }
 
     showExitModal();
   });
-
-  // ----------------------------------------------------------
-  // MOSTRAR ETAPA
-  // ----------------------------------------------------------
 
   function showStep(stepNumber) {
     document.querySelectorAll(".question-step").forEach((step) => {
@@ -230,9 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const activeStep = getStepElement(stepNumber);
 
-    if (activeStep) {
-      activeStep.classList.add("active");
-    }
+    if (activeStep) activeStep.classList.add("active");
 
     restoreSelectedState(stepNumber);
     updateProgress();
@@ -245,29 +399,20 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // ----------------------------------------------------------
-  // PROGRESSO
-  // ----------------------------------------------------------
-
   function updateProgress() {
-    const percent = (currentStep / totalSteps) * 100;
+    const percent = 10 + (currentStep / totalSteps) * 90;
 
     progressBar.style.width = `${percent}%`;
     progressText.textContent = `${currentStep} de ${totalSteps}`;
   }
 
-  // ----------------------------------------------------------
-  // BOTÕES
-  // ----------------------------------------------------------
-
   function updateButtons() {
     backButton.disabled = currentStep === 1;
 
-    if (currentStep === totalSteps) {
-      nextButton.textContent = "Gerar meu cronograma ✦";
-    } else {
-      nextButton.textContent = "Continuar →";
-    }
+    nextButton.textContent =
+      currentStep === totalSteps
+        ? "Gerar meu cronograma ✦"
+        : "Continuar →";
 
     updateNextButton();
   }
@@ -280,16 +425,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const key = stepKeys[currentStep];
     const value = answers[key];
 
-    if (Array.isArray(value)) {
-      return value.length > 0;
-    }
-
-    return Boolean(value);
+    return Array.isArray(value)
+      ? value.length > 0
+      : Boolean(value);
   }
-
-  // ----------------------------------------------------------
-  // RESTAURAR MARCAÇÕES VISUAIS
-  // ----------------------------------------------------------
 
   function restoreSelectedState(stepNumber) {
     const stepElement = getStepElement(stepNumber);
@@ -303,21 +442,21 @@ document.addEventListener("DOMContentLoaded", () => {
       .forEach((button) => {
         button.classList.remove("selected");
 
-        const buttonValue = button.dataset.value;
+        const value = button.dataset.value;
 
         if (Array.isArray(savedValue)) {
-          if (savedValue.includes(buttonValue)) {
+          if (savedValue.includes(value)) {
             button.classList.add("selected");
           }
-        } else if (savedValue === buttonValue) {
+        } else if (savedValue === value) {
           button.classList.add("selected");
         }
       });
   }
 
-  // ----------------------------------------------------------
-  // SALVAMENTO LOCAL
-  // ----------------------------------------------------------
+  // ========================================================
+  // SALVAMENTO
+  // ========================================================
 
   function saveAnswers() {
     try {
@@ -348,9 +487,432 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ----------------------------------------------------------
-  // FINALIZAÇÃO
-  // ----------------------------------------------------------
+  // ========================================================
+  // SISTEMA DE AJUDA
+  // ========================================================
+
+  function setupHelpSystem() {
+    // Delegação de clique: funciona mesmo se os botões forem
+    // recriados ou alterados depois que a página já carregou.
+    document.addEventListener("click", (event) => {
+      const helpButton = event.target.closest("[data-help]");
+
+      if (helpButton) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const helpType = helpButton.dataset.help;
+
+        if (helpType) {
+          openHelp(helpType);
+        }
+
+        return;
+      }
+
+      const closeButton = event.target.closest("[data-close-help]");
+
+      if (closeButton) {
+        event.preventDefault();
+        closeHelp();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        hairHelpModal &&
+        !hairHelpModal.hidden
+      ) {
+        closeHelp();
+      }
+    });
+  }
+
+  function openHelp(type) {
+    if (
+      !hairHelpModal ||
+      !hairHelpTitle ||
+      !hairHelpEyebrow ||
+      !hairHelpDescription ||
+      !hairHelpContent ||
+      !hairHelpResult ||
+      !hairHelpNext
+    ) {
+      console.error("HAIRCURA: elementos do modal de ajuda não foram encontrados.");
+      showToast(
+        "Não foi possível abrir o teste",
+        "Atualize a página com Ctrl + F5 e tente novamente."
+      );
+      return;
+    }
+
+    currentHelpType = type;
+    helpStage = 0;
+    helpSelections = {};
+
+    hairHelpModal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    hairHelpResult.hidden = true;
+
+    const content = getHelpIntro(type);
+
+    hairHelpEyebrow.textContent = content.eyebrow;
+    hairHelpTitle.textContent = content.title;
+    hairHelpDescription.textContent = content.description;
+    hairHelpContent.innerHTML = content.html;
+    hairHelpNext.textContent =
+      type === "tipo"
+        ? "Entendi"
+        : "Começar teste";
+
+    hairHelpNext.onclick = () => {
+      if (type === "tipo") {
+        closeHelp();
+        return;
+      }
+
+      startGuidedTest(type);
+    };
+  }
+
+  function closeHelp() {
+    hairHelpModal.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  function getHelpIntro(type) {
+    const guides = {
+      tipo: {
+        eyebrow: "GUIA DE TIPO",
+        title: "Observe o formato natural do fio",
+        description:
+          "Veja o cabelo limpo, seco e sem chapinha, escova ou modelador.",
+        html: `
+          <div class="help-guide-card">
+            <strong>Tipo 1 — Liso</strong>
+            <p>O fio permanece predominantemente reto.</p>
+          </div>
+
+          <div class="help-guide-card">
+            <strong>Tipo 2 — Ondulado</strong>
+            <p>Forma ondas parecidas com a letra S, sem fechar cachos completos.</p>
+          </div>
+
+          <div class="help-guide-card">
+            <strong>Tipo 3 — Cacheado</strong>
+            <p>Forma espirais ou anéis visíveis ao longo do cabelo.</p>
+          </div>
+
+          <div class="help-guide-card">
+            <strong>Tipo 4 — Crespo</strong>
+            <p>Apresenta curvaturas muito fechadas, pequenas espirais ou padrão em zigue-zague.</p>
+          </div>
+        `
+      },
+
+      curvatura: {
+        eyebrow: "TESTE DE CURVATURA",
+        title: "Vamos estimar sua curvatura",
+        description:
+          "Responda observando a maior parte do cabelo em seu estado natural.",
+        html: `
+          <div class="help-guide-card">
+            <strong>O teste leva poucos segundos</strong>
+            <p>Vamos perguntar como o fio se comporta e indicar a faixa mais provável.</p>
+          </div>
+        `
+      },
+
+      espessura: {
+        eyebrow: "TESTE DE ESPESSURA",
+        title: "Descubra se o fio é fino, médio ou grosso",
+        description:
+          "Pegue um único fio limpo e seco. Observe e sinta o fio entre os dedos.",
+        html: `
+          <div class="help-guide-card">
+            <strong>Dica</strong>
+            <p>Não avalie a quantidade de cabelo. Queremos a espessura de apenas um fio.</p>
+          </div>
+
+          <div class="help-guide-card">
+            <strong>Como comparar</strong>
+            <p>Um fio fino costuma ser pouco perceptível; um fio grosso é facilmente visível e sentido entre os dedos.</p>
+          </div>
+        `
+      },
+
+      porosidade: {
+        eyebrow: "TESTE DE POROSIDADE",
+        title: "Vamos observar como seu cabelo reage à água",
+        description:
+          "O teste usa o comportamento real dos fios em vez de depender do teste do copo.",
+        html: `
+          <div class="help-guide-card">
+            <strong>Antes de começar</strong>
+            <p>Pense em como seu cabelo costuma molhar, secar e receber produtos no dia a dia.</p>
+          </div>
+        `
+      }
+    };
+
+    return guides[type];
+  }
+
+  function startGuidedTest(type) {
+    helpStage = 1;
+    helpSelections = {};
+
+    if (type === "curvatura") {
+      renderTestQuestion(
+        "Qual formato aparece com mais frequência?",
+        [
+          ["reto", "Predominantemente reto", "Quase não forma ondas."],
+          ["ondas", "Ondas em S", "Forma ondas visíveis."],
+          ["aneis", "Anéis / espirais", "Forma cachos completos."],
+          ["fechado", "Curvatura muito fechada", "Espirais pequenas ou zigue-zague."]
+        ],
+        (value) => {
+          const resultMap = {
+            reto: {
+              value: "1B",
+              title: "Curvatura provável: Tipo 1",
+              text: "Seu padrão parece estar na família dos cabelos lisos. Compare 1A, 1B e 1C para escolher o mais parecido."
+            },
+            ondas: {
+              value: "2B",
+              title: "Curvatura provável: Tipo 2",
+              text: "Seu padrão parece ondulado. Compare 2A, 2B e 2C para escolher a intensidade das ondas."
+            },
+            aneis: {
+              value: "3B",
+              title: "Curvatura provável: Tipo 3",
+              text: "Seu padrão parece cacheado. Compare 3A, 3B e 3C para escolher o tamanho dos cachos."
+            },
+            fechado: {
+              value: "4A",
+              title: "Curvatura provável: Tipo 4",
+              text: "Seu padrão parece crespo. Compare 4A, 4B e 4C para escolher a opção mais próxima."
+            }
+          };
+
+          showHelpResult(
+            resultMap[value],
+            "Usar como ponto de partida"
+          );
+        }
+      );
+    }
+
+    if (type === "espessura") {
+      renderTestQuestion(
+        "Ao segurar um único fio entre os dedos, como ele parece?",
+        [
+          ["fino", "Quase não sinto o fio", "Ele é delicado e pouco perceptível."],
+          ["medio", "Consigo sentir o fio", "É perceptível, mas não parece muito rígido."],
+          ["grosso", "Sinto o fio facilmente", "Ele parece mais firme e encorpado."]
+        ],
+        (value) => {
+          const map = {
+            fino: {
+              value: "fino",
+              title: "Espessura provável: Fina",
+              text: "Seu fio apresenta características mais próximas de cabelos finos."
+            },
+            medio: {
+              value: "medio",
+              title: "Espessura provável: Média",
+              text: "Seu fio apresenta características intermediárias."
+            },
+            grosso: {
+              value: "grosso",
+              title: "Espessura provável: Grossa",
+              text: "Seu fio apresenta características mais próximas de cabelos grossos."
+            }
+          };
+
+          showHelpResult(map[value], "Usar esta resposta");
+        }
+      );
+    }
+
+    if (type === "porosidade") {
+      renderPorosityQuestionOne();
+    }
+  }
+
+  function renderPorosityQuestionOne() {
+    renderTestQuestion(
+      "Quando você molha o cabelo, o que costuma acontecer?",
+      [
+        ["demora", "Demora para molhar", "A água parece ficar sobre os fios no início."],
+        ["normal", "Molha normalmente", "A água entra nos fios sem muita dificuldade."],
+        ["rapido", "Molha muito rápido", "Os fios absorvem água quase imediatamente."]
+      ],
+      (value) => {
+        helpSelections.water = value;
+        renderPorosityQuestionTwo();
+      }
+    );
+  }
+
+  function renderPorosityQuestionTwo() {
+    renderTestQuestion(
+      "E depois de aplicar creme ou máscara?",
+      [
+        ["acumula", "Produtos pesam ou acumulam", "Parece que ficam sobre o cabelo."],
+        ["equilibrado", "O cabelo recebe bem", "Nem pesa demais nem perde o efeito rapidamente."],
+        ["some", "O efeito some rápido", "O cabelo volta a parecer seco em pouco tempo."]
+      ],
+      (value) => {
+        helpSelections.product = value;
+        calculatePorosityTest();
+      }
+    );
+  }
+
+  function calculatePorosityTest() {
+    let low = 0;
+    let medium = 0;
+    let high = 0;
+
+    if (helpSelections.water === "demora") low += 2;
+    if (helpSelections.water === "normal") medium += 2;
+    if (helpSelections.water === "rapido") high += 2;
+
+    if (helpSelections.product === "acumula") low += 2;
+    if (helpSelections.product === "equilibrado") medium += 2;
+    if (helpSelections.product === "some") high += 2;
+
+    const ranking = [
+      ["baixa", low],
+      ["media", medium],
+      ["alta", high]
+    ].sort((a, b) => b[1] - a[1]);
+
+    const result = ranking[0][0];
+
+    const resultMap = {
+      baixa: {
+        value: "baixa",
+        title: "Porosidade provável: Baixa",
+        text: "Seu cabelo parece ter mais dificuldade para absorver água e produtos."
+      },
+      media: {
+        value: "media",
+        title: "Porosidade provável: Média",
+        text: "Seu cabelo parece absorver e manter hidratação de forma equilibrada."
+      },
+      alta: {
+        value: "alta",
+        title: "Porosidade provável: Alta",
+        text: "Seu cabelo parece absorver rapidamente, mas também perder hidratação com facilidade."
+      }
+    };
+
+    showHelpResult(
+      resultMap[result],
+      "Usar esta resposta"
+    );
+  }
+
+  function renderTestQuestion(title, options, onSelect) {
+    hairHelpTitle.textContent = title;
+    hairHelpDescription.textContent =
+      "Escolha a opção que mais representa seu cabelo.";
+
+    hairHelpContent.innerHTML = options
+      .map(([value, label, description]) => `
+        <button
+          class="help-test-option"
+          type="button"
+          data-test-value="${value}"
+        >
+          <strong>${label}</strong>
+          <p>${description}</p>
+        </button>
+      `)
+      .join("");
+
+    hairHelpResult.hidden = true;
+    hairHelpNext.style.display = "none";
+
+    hairHelpContent
+      .querySelectorAll(".help-test-option")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          hairHelpContent
+            .querySelectorAll(".help-test-option")
+            .forEach((item) => item.classList.remove("selected"));
+
+          button.classList.add("selected");
+
+          setTimeout(() => {
+            onSelect(button.dataset.testValue);
+          }, 180);
+        });
+      });
+  }
+
+  function showHelpResult(result, buttonText) {
+    hairHelpContent.innerHTML = "";
+
+    hairHelpResult.hidden = false;
+
+    hairHelpResult.innerHTML = `
+      <strong>${result.title}</strong>
+      <p>${result.text}</p>
+    `;
+
+    hairHelpNext.style.display = "";
+    hairHelpNext.textContent = buttonText;
+
+    hairHelpNext.onclick = () => {
+      applyGuidedResult(currentHelpType, result.value);
+      closeHelp();
+    };
+  }
+
+  function applyGuidedResult(type, value) {
+    const stepMap = {
+      curvatura: 2,
+      espessura: 3,
+      porosidade: 4
+    };
+
+    const keyMap = {
+      curvatura: "curvatura",
+      espessura: "espessura",
+      porosidade: "porosidade"
+    };
+
+    const step = stepMap[type];
+    const key = keyMap[type];
+
+    if (!step || !key) return;
+
+    answers[key] = value;
+    saveAnswers();
+
+    currentStep = step;
+    showStep(currentStep);
+
+    document.getElementById("assessmentQuestions")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    showToast(
+      "Resposta preenchida",
+      "Você pode manter essa opção ou escolher outra manualmente."
+    );
+  }
+
+  // ========================================================
+  // PERFIL E RESULTADO
+  // ========================================================
 
   function finishAssessment() {
     saveAnswers();
@@ -369,16 +931,11 @@ document.addEventListener("DOMContentLoaded", () => {
     showAnalysisScreen(profile);
   }
 
-  // ----------------------------------------------------------
-  // MOTOR INICIAL DE ANÁLISE
-  // ----------------------------------------------------------
-
   function calculateHairProfile(data) {
     let hidratacao = 0;
     let nutricao = 0;
     let reconstrucao = 0;
 
-    // Estado atual
     if (data.estadoAtual.includes("ressecado")) hidratacao += 4;
     if (data.estadoAtual.includes("opaco")) hidratacao += 2;
     if (data.estadoAtual.includes("sem-definicao")) hidratacao += 1;
@@ -390,7 +947,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (data.estadoAtual.includes("quebradico")) reconstrucao += 4;
     if (data.estadoAtual.includes("poroso")) reconstrucao += 2;
 
-    // Porosidade
     if (data.porosidade === "alta") {
       hidratacao += 2;
       nutricao += 2;
@@ -401,7 +957,6 @@ document.addEventListener("DOMContentLoaded", () => {
       hidratacao += 1;
     }
 
-    // Química
     if (data.quimica.includes("descoloracao")) {
       reconstrucao += 4;
       hidratacao += 2;
@@ -417,7 +972,6 @@ document.addEventListener("DOMContentLoaded", () => {
       hidratacao += 1;
     }
 
-    // Calor
     if (data.calor === "frequente") {
       hidratacao += 2;
       nutricao += 2;
@@ -429,13 +983,11 @@ document.addEventListener("DOMContentLoaded", () => {
       nutricao += 1;
     }
 
-    // Objetivo
     if (data.objetivo === "recuperacao") reconstrucao += 2;
     if (data.objetivo === "maciez-brilho") hidratacao += 2;
     if (data.objetivo === "definicao") nutricao += 2;
     if (data.objetivo === "frizz") nutricao += 2;
 
-    // Normalização para score visual
     const maxScore = Math.max(
       hidratacao,
       nutricao,
@@ -453,59 +1005,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .sort((a, b) => b[1] - a[1])
       .map(([name]) => name);
 
-    const frequency = getCareFrequency(data.lavagem);
-
     return {
       createdAt: new Date().toISOString(),
       answers: data,
-      rawScores: {
-        hidratacao,
-        nutricao,
-        reconstrucao
-      },
       scores,
-      priority,
-      weeklyCareFrequency: frequency,
-      recommendation: createRecommendation(
-        priority,
-        scores,
-        frequency
-      )
+      priority
     };
   }
-
-  function getCareFrequency(washFrequency) {
-    if (washFrequency === "1-2") return 2;
-    if (washFrequency === "3-4") return 3;
-    if (washFrequency === "5+") return 3;
-
-    return 3;
-  }
-
-  function createRecommendation(priority, scores, frequency) {
-    const labels = {
-      hidratacao: "Hidratação",
-      nutricao: "Nutrição",
-      reconstrucao: "Reconstrução"
-    };
-
-    return {
-      principal: labels[priority[0]],
-      secundaria: labels[priority[1]],
-      terceira: labels[priority[2]],
-      frequency,
-      summary:
-        `Seu cabelo demonstra maior necessidade de ${labels[
-          priority[0]
-        ].toLowerCase()}, seguida de ${labels[
-          priority[1]
-        ].toLowerCase()}.`
-    };
-  }
-
-  // ----------------------------------------------------------
-  // TELA DE ANÁLISE
-  // ----------------------------------------------------------
 
   function showAnalysisScreen(profile) {
     const shell = document.querySelector(".assessment-shell");
@@ -513,87 +1019,30 @@ document.addEventListener("DOMContentLoaded", () => {
     shell.innerHTML = `
       <section class="analysis-screen">
         <div class="analysis-orb">
-          <span class="analysis-symbol">✦</span>
+          <span>✦</span>
         </div>
 
         <span class="analysis-label">HAIRCURA INTELLIGENCE</span>
 
         <h1>Analisando seu perfil capilar...</h1>
 
-        <p id="analysisMessage">
-          Cruzando suas respostas e identificando as principais necessidades
-          dos seus fios.
+        <p>
+          Cruzando suas respostas para identificar as prioridades do seu cabelo.
         </p>
 
         <div class="analysis-loader">
           <span></span>
         </div>
-
-        <div class="analysis-steps">
-          <div class="analysis-item active">
-            <span>✓</span>
-            Perfil capilar
-          </div>
-
-          <div class="analysis-item" id="analysisNeeds">
-            <span>◌</span>
-            Necessidades
-          </div>
-
-          <div class="analysis-item" id="analysisSchedule">
-            <span>◌</span>
-            Cronograma
-          </div>
-        </div>
       </section>
     `;
 
-    injectAnalysisStyles();
-
-    setTimeout(() => {
-      const needs = document.getElementById("analysisNeeds");
-
-      if (needs) {
-        needs.classList.add("active");
-        needs.querySelector("span").textContent = "✓";
-      }
-
-      const message = document.getElementById("analysisMessage");
-
-      if (message) {
-        message.textContent =
-          "Identificamos as prioridades do seu cabelo. Agora estamos organizando sua rotina.";
-      }
-    }, 1100);
-
-    setTimeout(() => {
-      const schedule = document.getElementById("analysisSchedule");
-
-      if (schedule) {
-        schedule.classList.add("active");
-        schedule.querySelector("span").textContent = "✓";
-      }
-    }, 2100);
-
     setTimeout(() => {
       showResultPreview(profile);
-    }, 3000);
+    }, 2300);
   }
-
-  // ----------------------------------------------------------
-  // RESULTADO PRELIMINAR
-  // ----------------------------------------------------------
 
   function showResultPreview(profile) {
     const shell = document.querySelector(".assessment-shell");
-
-    const topPriority = profile.priority[0];
-
-    const icons = {
-      hidratacao: "💧",
-      nutricao: "◉",
-      reconstrucao: "✦"
-    };
 
     const labels = {
       hidratacao: "Hidratação",
@@ -601,131 +1050,100 @@ document.addEventListener("DOMContentLoaded", () => {
       reconstrucao: "Reconstrução"
     };
 
+    const topPriority = profile.priority[0];
+
     shell.innerHTML = `
       <section class="result-preview">
-        <div class="result-badge">
-          <span>✓</span>
-          Avaliação concluída
-        </div>
+        <div class="result-badge">✓ Avaliação concluída</div>
 
         <h1>Seu perfil capilar está pronto.</h1>
 
         <p>
-          ${profile.recommendation.summary}
+          A maior prioridade identificada no momento é
+          <strong>${labels[topPriority]}</strong>.
         </p>
 
         <div class="result-priority-card">
-          <span class="result-priority-label">MAIOR PRIORIDADE</span>
-
-          <div class="result-priority-icon">
-            ${icons[topPriority]}
-          </div>
-
+          <span>MAIOR PRIORIDADE</span>
           <h2>${labels[topPriority]}</h2>
-
-          <strong>
-            ${profile.scores[topPriority]}%
-          </strong>
-
-          <span class="result-score-caption">
-            necessidade relativa no seu perfil
-          </span>
+          <strong>${profile.scores[topPriority]}%</strong>
         </div>
 
         <div class="result-score-grid">
-          ${renderScoreCard(
-            "💧",
-            "Hidratação",
-            profile.scores.hidratacao
-          )}
-
-          ${renderScoreCard(
-            "◉",
-            "Nutrição",
-            profile.scores.nutricao
-          )}
-
-          ${renderScoreCard(
-            "✦",
-            "Reconstrução",
-            profile.scores.reconstrucao
-          )}
+          ${renderScoreCard("Hidratação", profile.scores.hidratacao)}
+          ${renderScoreCard("Nutrição", profile.scores.nutricao)}
+          ${renderScoreCard("Reconstrução", profile.scores.reconstrucao)}
         </div>
 
-        <button class="result-button" id="createScheduleButton" type="button">
+        <button
+          class="result-button"
+          id="createScheduleButton"
+          type="button"
+        >
           Criar meu cronograma →
         </button>
 
-        <button class="restart-assessment" id="restartAssessment" type="button">
+        <button
+          class="restart-assessment"
+          id="restartAssessment"
+          type="button"
+        >
           Refazer avaliação
         </button>
       </section>
     `;
 
-    injectResultStyles();
+    document
+      .getElementById("createScheduleButton")
+      .addEventListener("click", () => {
+        showToast(
+          "Cronograma personalizado",
+          "A próxima etapa será construir a tela do cronograma automático."
+        );
+      });
 
-    const createScheduleButton = document.getElementById(
-      "createScheduleButton"
-    );
-
-    createScheduleButton.addEventListener("click", () => {
-      // A próxima etapa do projeto será cronograma.html.
-      showTemporaryMessage(
-        "Cronograma personalizado",
-        "A próxima tela que vamos construir será o seu cronograma automático."
-      );
-    });
-
-    const restartAssessment = document.getElementById(
-      "restartAssessment"
-    );
-
-    restartAssessment.addEventListener("click", () => {
-      localStorage.removeItem("haircuraAssessment");
-      localStorage.removeItem("haircuraProfile");
-      window.location.reload();
-    });
+    document
+      .getElementById("restartAssessment")
+      .addEventListener("click", () => {
+        localStorage.removeItem("haircuraAssessment");
+        localStorage.removeItem("haircuraProfile");
+        window.location.reload();
+      });
   }
 
-  function renderScoreCard(icon, label, score) {
+  function renderScoreCard(label, score) {
     return `
       <div class="result-score-card">
-        <span>${icon}</span>
         <strong>${score}%</strong>
         <small>${label}</small>
       </div>
     `;
   }
 
-  // ----------------------------------------------------------
-  // MODAL PARA SAIR
-  // ----------------------------------------------------------
+  // ========================================================
+  // MODAL DE SAÍDA
+  // ========================================================
 
   function showExitModal() {
-    const existing = document.querySelector(".assessment-modal");
-
-    if (existing) existing.remove();
-
     const modal = document.createElement("div");
-    modal.className = "assessment-modal";
+    modal.className = "assessment-exit-modal";
 
     modal.innerHTML = `
-      <div class="assessment-modal-card">
-        <div class="modal-icon">✦</div>
+      <div class="assessment-exit-card">
+        <div class="exit-icon">✦</div>
 
         <h3>Sair da avaliação?</h3>
 
         <p>
-          Suas respostas já foram salvas neste dispositivo e você poderá
-          continuar depois.
+          Suas respostas já preenchidas ficam salvas neste dispositivo.
         </p>
 
-        <div class="modal-actions">
-          <button type="button" class="modal-cancel">
-            Continuar avaliação
+        <div class="exit-actions">
+          <button class="exit-cancel" type="button">
+            Continuar
           </button>
 
-          <button type="button" class="modal-exit">
+          <button class="exit-confirm" type="button">
             Sair
           </button>
         </div>
@@ -734,35 +1152,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.appendChild(modal);
 
-    requestAnimationFrame(() => {
-      modal.classList.add("visible");
-    });
+    modal
+      .querySelector(".exit-cancel")
+      .addEventListener("click", () => modal.remove());
 
     modal
-      .querySelector(".modal-cancel")
-      .addEventListener("click", () => {
-        modal.classList.remove("visible");
-
-        setTimeout(() => {
-          modal.remove();
-        }, 220);
-      });
-
-    modal
-      .querySelector(".modal-exit")
+      .querySelector(".exit-confirm")
       .addEventListener("click", () => {
         window.location.href = "index.html";
       });
   }
 
-  // ----------------------------------------------------------
-  // MENSAGEM TEMPORÁRIA
-  // ----------------------------------------------------------
+  // ========================================================
+  // TOAST
+  // ========================================================
 
-  function showTemporaryMessage(title, message) {
-    const old = document.querySelector(".assessment-toast");
-
-    if (old) old.remove();
+  function showToast(title, message) {
+    document.querySelector(".assessment-toast")?.remove();
 
     const toast = document.createElement("div");
     toast.className = "assessment-toast";
@@ -785,64 +1191,158 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       toast.classList.remove("visible");
 
-      setTimeout(() => {
-        toast.remove();
-      }, 250);
-    }, 3800);
+      setTimeout(() => toast.remove(), 230);
+    }, 3300);
   }
 
-  // ----------------------------------------------------------
-  // ESTILOS DAS TELAS DINÂMICAS
-  // ----------------------------------------------------------
+  // ========================================================
+  // ESTILOS DINÂMICOS
+  // ========================================================
 
-  function injectAnalysisStyles() {
-    if (document.getElementById("analysisStyles")) return;
-
+  function injectDynamicStyles() {
     const style = document.createElement("style");
-    style.id = "analysisStyles";
 
     style.textContent = `
-      .analysis-screen {
-        min-height: 590px;
-        padding: 70px 24px;
+      .assessment-toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 10000;
+        width: min(390px, calc(100vw - 28px));
+        padding: 14px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 12px;
+        align-items: center;
+        border: 1px solid rgba(139,92,246,.24);
+        border-radius: 17px;
+        background: rgba(11,12,20,.97);
+        box-shadow: 0 24px 60px rgba(0,0,0,.43);
+        opacity: 0;
+        transform: translateY(16px);
+        transition: .23s ease;
+      }
+
+      .assessment-toast.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .assessment-toast-icon {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
+      }
+
+      .assessment-toast > div:last-child {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        gap: 4px;
+      }
+
+      .assessment-toast strong {
+        font-size: .86rem;
+      }
+
+      .assessment-toast span {
+        color: #8f899d;
+        font-size: .76rem;
+        line-height: 1.4;
+      }
+
+      .assessment-exit-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        padding: 20px;
+        display: grid;
+        place-items: center;
+        background: rgba(3,4,9,.78);
+        backdrop-filter: blur(10px);
+      }
+
+      .assessment-exit-card {
+        width: min(420px, 100%);
+        padding: 27px;
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: 24px;
+        background: #0c0e17;
+        text-align: center;
+        box-shadow: 0 30px 80px rgba(0,0,0,.5);
+      }
+
+      .exit-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 14px;
+        display: grid;
+        place-items: center;
+        border-radius: 17px;
+        background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
+      }
+
+      .assessment-exit-card h3 {
+        font-size: 1.3rem;
+      }
+
+      .assessment-exit-card p {
+        margin-top: 9px;
+        color: #8e899a;
+        font-size: .84rem;
+      }
+
+      .exit-actions {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+
+      .exit-actions button {
+        min-height: 46px;
+        border-radius: 13px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .exit-cancel {
+        border: 1px solid rgba(255,255,255,.08);
+        background: rgba(255,255,255,.04);
+        color: white;
+      }
+
+      .exit-confirm {
+        border: 0;
+        background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
+        color: white;
+      }
+
+      .analysis-screen,
+      .result-preview {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 75px 20px;
         text-align: center;
       }
 
       .analysis-orb {
-        width: 118px;
-        height: 118px;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 22px;
         display: grid;
         place-items: center;
-        position: relative;
-        margin-bottom: 25px;
         border-radius: 50%;
         background:
-          radial-gradient(circle at center, #10111a 48%, transparent 50%),
-          conic-gradient(#8b5cf6, #ff4fb8, #66ddff, #8b5cf6);
-        box-shadow:
-          0 0 50px rgba(139,92,246,.2),
-          0 20px 55px rgba(0,0,0,.3);
-        animation: analysisSpin 3s linear infinite;
+          radial-gradient(circle at center, #0c0e17 46%, transparent 48%),
+          conic-gradient(#8b5cf6, #ff4fb8, #8b5cf6);
+        animation: haircuraSpin 2.4s linear infinite;
       }
 
-      .analysis-orb::after {
-        content: "";
-        position: absolute;
-        inset: 8px;
-        border-radius: 50%;
-        background: #0c0d15;
-      }
-
-      .analysis-symbol {
-        position: relative;
-        z-index: 2;
-        color: white;
-        font-size: 2rem;
-        animation: analysisSpinReverse 3s linear infinite;
+      .analysis-orb span {
+        font-size: 1.8rem;
       }
 
       .analysis-label {
@@ -852,207 +1352,99 @@ document.addEventListener("DOMContentLoaded", () => {
         letter-spacing: .12em;
       }
 
-      .analysis-screen h1 {
-        max-width: 700px;
-        margin-top: 14px;
-        font-family: 'Manrope', sans-serif;
-        font-size: clamp(2.3rem, 5vw, 4rem);
+      .analysis-screen h1,
+      .result-preview h1 {
+        margin-top: 15px;
+        font-size: clamp(2.2rem, 5vw, 4rem);
         line-height: 1;
         letter-spacing: -.055em;
       }
 
-      .analysis-screen > p {
-        max-width: 590px;
-        margin-top: 18px;
+      .analysis-screen p,
+      .result-preview > p {
+        max-width: 600px;
+        margin: 17px auto 0;
         color: #9691a7;
-        line-height: 1.65;
+        line-height: 1.6;
       }
 
       .analysis-loader {
-        width: min(450px, 90%);
+        width: min(430px, 90%);
         height: 7px;
-        margin-top: 30px;
+        margin: 28px auto 0;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255,255,255,.055);
+        background: rgba(255,255,255,.06);
       }
 
       .analysis-loader span {
         display: block;
-        width: 35%;
+        width: 40%;
         height: 100%;
         border-radius: inherit;
         background: linear-gradient(90deg, #8b5cf6, #ff4fb8);
-        animation: analysisLoad 1.15s ease-in-out infinite alternate;
-      }
-
-      .analysis-steps {
-        margin-top: 26px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .analysis-item {
-        padding: 10px 13px;
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        border: 1px solid rgba(255,255,255,.06);
-        border-radius: 999px;
-        background: rgba(255,255,255,.025);
-        color: #716d7d;
-        font-size: .76rem;
-        font-weight: 700;
-        transition: .25s ease;
-      }
-
-      .analysis-item.active {
-        color: #d3c7ff;
-        border-color: rgba(139,92,246,.2);
-        background: rgba(139,92,246,.08);
-      }
-
-      @keyframes analysisSpin {
-        to { transform: rotate(360deg); }
-      }
-
-      @keyframes analysisSpinReverse {
-        to { transform: rotate(-360deg); }
-      }
-
-      @keyframes analysisLoad {
-        from { transform: translateX(-20%); }
-        to { transform: translateX(205%); }
-      }
-    `;
-
-    document.head.appendChild(style);
-  }
-
-  function injectResultStyles() {
-    if (document.getElementById("resultStyles")) return;
-
-    const style = document.createElement("style");
-    style.id = "resultStyles";
-
-    style.textContent = `
-      .result-preview {
-        max-width: 820px;
-        margin: 0 auto;
-        padding: 25px 0 10px;
-        text-align: center;
+        animation: haircuraLoad 1s ease-in-out infinite alternate;
       }
 
       .result-badge {
         width: fit-content;
         margin: 0 auto;
-        padding: 9px 13px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid rgba(89,221,160,.18);
+        padding: 8px 12px;
         border-radius: 999px;
-        background: rgba(89,221,160,.06);
-        color: #74e5b1;
-        font-size: .72rem;
+        background: rgba(89,221,160,.07);
+        color: #73e3b0;
+        font-size: .7rem;
         font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-      }
-
-      .result-preview > h1 {
-        margin-top: 18px;
-        font-family: 'Manrope', sans-serif;
-        font-size: clamp(2.5rem, 5vw, 4.4rem);
-        line-height: .98;
-        letter-spacing: -.06em;
-      }
-
-      .result-preview > p {
-        max-width: 650px;
-        margin: 18px auto 0;
-        color: #9e99ac;
-        line-height: 1.65;
       }
 
       .result-priority-card {
-        margin: 32px auto 18px;
-        padding: 28px;
         max-width: 420px;
-        border: 1px solid rgba(139,92,246,.22);
-        border-radius: 24px;
-        background:
-          radial-gradient(circle at 50% 0%, rgba(255,79,184,.12), transparent 35%),
-          linear-gradient(180deg, rgba(139,92,246,.12), rgba(255,255,255,.025));
-        box-shadow: 0 20px 50px rgba(0,0,0,.25);
+        margin: 28px auto 16px;
+        padding: 25px;
+        border: 1px solid rgba(139,92,246,.2);
+        border-radius: 22px;
+        background: rgba(139,92,246,.07);
       }
 
-      .result-priority-label {
-        color: #9b8dbd;
-        font-size: .66rem;
+      .result-priority-card > span {
+        color: #8d83a2;
+        font-size: .65rem;
         font-weight: 800;
-        letter-spacing: .12em;
-      }
-
-      .result-priority-icon {
-        width: 72px;
-        height: 72px;
-        margin: 17px auto 12px;
-        display: grid;
-        place-items: center;
-        border-radius: 21px;
-        background: rgba(139,92,246,.1);
-        font-size: 2rem;
+        letter-spacing: .1em;
       }
 
       .result-priority-card h2 {
-        font-family: 'Manrope', sans-serif;
-        font-size: 1.55rem;
+        margin-top: 10px;
+        font-size: 1.5rem;
       }
 
       .result-priority-card > strong {
         display: block;
-        margin-top: 8px;
-        font-size: 2.45rem;
-        background: linear-gradient(135deg, #bba2ff, #ff5dbd);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-
-      .result-score-caption {
-        color: #747082;
-        font-size: .75rem;
+        margin-top: 7px;
+        font-size: 2.5rem;
+        color: #c8b5ff;
       }
 
       .result-score-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-top: 18px;
+        gap: 10px;
       }
 
       .result-score-card {
-        min-height: 125px;
-        padding: 18px;
+        min-height: 105px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        border: 1px solid rgba(255,255,255,.065);
-        border-radius: 18px;
+        gap: 5px;
+        border: 1px solid rgba(255,255,255,.06);
+        border-radius: 17px;
         background: rgba(255,255,255,.025);
       }
 
-      .result-score-card > span {
-        font-size: 1.3rem;
-      }
-
       .result-score-card strong {
-        font-size: 1.45rem;
+        font-size: 1.35rem;
       }
 
       .result-score-card small {
@@ -1061,25 +1453,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
       .result-button {
         width: min(420px, 100%);
-        min-height: 54px;
-        margin-top: 26px;
+        min-height: 53px;
+        margin-top: 24px;
         border: 0;
-        border-radius: 16px;
+        border-radius: 15px;
         background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
         color: white;
         font-weight: 800;
         cursor: pointer;
-        box-shadow: 0 14px 32px rgba(139,92,246,.23);
       }
 
       .restart-assessment {
         display: block;
-        margin: 14px auto 0;
+        margin: 13px auto 0;
         border: 0;
         background: transparent;
         color: #777284;
-        font-size: .8rem;
         cursor: pointer;
+      }
+
+      @keyframes haircuraSpin {
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes haircuraLoad {
+        from { transform: translateX(-25%); }
+        to { transform: translateX(190%); }
       }
 
       @media (max-width: 640px) {
@@ -1087,172 +1486,19 @@ document.addEventListener("DOMContentLoaded", () => {
           grid-template-columns: 1fr;
         }
 
-        .result-score-card {
-          min-height: 95px;
+        .assessment-toast {
+          left: 14px;
+          right: 14px;
+          bottom: 14px;
+          width: auto;
+        }
+
+        .exit-actions {
+          grid-template-columns: 1fr;
         }
       }
     `;
 
     document.head.appendChild(style);
   }
-
-  // ----------------------------------------------------------
-  // ESTILOS GERAIS DINÂMICOS
-  // ----------------------------------------------------------
-
-  const dynamicStyles = document.createElement("style");
-
-  dynamicStyles.textContent = `
-    .assessment-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      padding: 20px;
-      display: grid;
-      place-items: center;
-      background: rgba(4,5,9,.72);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .22s ease;
-    }
-
-    .assessment-modal.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .assessment-modal-card {
-      width: min(430px, 100%);
-      padding: 27px;
-      border: 1px solid rgba(255,255,255,.09);
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at 100% 0%, rgba(255,79,184,.08), transparent 28%),
-        #0c0e17;
-      box-shadow: 0 30px 80px rgba(0,0,0,.45);
-      text-align: center;
-      transform: translateY(15px) scale(.98);
-      transition: transform .22s ease;
-    }
-
-    .assessment-modal.visible .assessment-modal-card {
-      transform: translateY(0) scale(1);
-    }
-
-    .modal-icon {
-      width: 54px;
-      height: 54px;
-      margin: 0 auto 15px;
-      display: grid;
-      place-items: center;
-      border-radius: 17px;
-      background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
-      box-shadow: 0 0 28px rgba(139,92,246,.2);
-    }
-
-    .assessment-modal-card h3 {
-      font-family: 'Manrope', sans-serif;
-      font-size: 1.35rem;
-    }
-
-    .assessment-modal-card p {
-      margin-top: 10px;
-      color: #918c9e;
-      font-size: .86rem;
-      line-height: 1.55;
-    }
-
-    .modal-actions {
-      margin-top: 22px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .modal-actions button {
-      min-height: 47px;
-      border-radius: 14px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .modal-cancel {
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
-      color: #c2bdcc;
-    }
-
-    .modal-exit {
-      border: 0;
-      background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
-      color: white;
-    }
-
-    .assessment-toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 9999;
-      width: min(390px, calc(100vw - 30px));
-      padding: 15px;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 12px;
-      align-items: center;
-      border: 1px solid rgba(139,92,246,.2);
-      border-radius: 18px;
-      background: rgba(11,12,20,.96);
-      box-shadow: 0 24px 60px rgba(0,0,0,.44);
-      opacity: 0;
-      transform: translateY(18px);
-      transition: .25s ease;
-    }
-
-    .assessment-toast.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .assessment-toast-icon {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #8b5cf6, #ff4fb8);
-    }
-
-    .assessment-toast > div:last-child {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .assessment-toast strong {
-      font-size: .88rem;
-    }
-
-    .assessment-toast span {
-      color: #8f899d;
-      font-size: .77rem;
-      line-height: 1.4;
-    }
-
-    @media (max-width: 520px) {
-      .modal-actions {
-        grid-template-columns: 1fr;
-      }
-
-      .assessment-toast {
-        left: 15px;
-        right: 15px;
-        bottom: 15px;
-        width: auto;
-      }
-    }
-  `;
-
-  document.head.appendChild(dynamicStyles);
 });
